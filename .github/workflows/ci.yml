@@ -32,7 +32,7 @@ jobs:
 
       - name: Run 7 deploy tests
         run: |
-          python3 04-一键部署/test_deploy.py
+          python3 04-一键部署/test_deploy.py --workspace .
 
       - name: Run dry-run deploy
         run: |
