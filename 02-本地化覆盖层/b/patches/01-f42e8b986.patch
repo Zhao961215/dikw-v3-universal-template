@@ -1,0 +1,92 @@
+From f42e8b986ab5c80aba087748806a649b11b970c1 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E5=B0=8F=E6=98=8E?= <zhao@xiaoming.local>
+Date: Tue, 2 Jun 2026 01:32:37 +0800
+Subject: [PATCH] fix(vision): auto-retry without
+ temperature/max_tokens/timeout on upstream code 1210
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+vision_analyze_tool hard-codes temperature=0.1 + max_tokens=2000 + timeout=120
+in its call_kwargs. When the request is routed through new-api → Zhipu
+glm-4v-flash, the upstream rejects these parameters with HTTP 400 + code
+1210 ("API 调用参数有误"). Zhipu's vision endpoint has a stricter parameter
+whitelist than its text endpoint — text-only requests with the same params
+work fine, but vision requests do not.
+
+Repro (2026-06-02):
+- curl with no temperature/max_tokens → 200 OK
+- curl with temperature=0.1 → 400 / code 1210
+- curl with max_tokens=2000 → 400 / code 1210
+- curl with timeout=120 → 400 / code 1210
+
+Fix:
+- New _is_param_error() detection function (peer to _is_image_size_error)
+- elif branch in vision_analyze_tool's try/except: on 1210, retry with the
+  same call_kwargs minus temperature/max_tokens/timeout, letting the upstream
+  apply its own defaults
+
+Verified: gateway restart + vision_analyze on real image returns 200 OK with
+complete analysis (previously failed at 1210). Skill vision-tool-integration
+already documents this failure mode (sections 1b/1c/1d) — no skill changes
+needed.
+---
+ tools/vision_tools.py | 35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+
+diff --git a/tools/vision_tools.py b/tools/vision_tools.py
+index 912777e2e..4c4836cfd 100644
+--- a/tools/vision_tools.py
++++ b/tools/vision_tools.py
+@@ -298,6 +298,27 @@ def _is_image_size_error(error: Exception) -> bool:
+     ))
+ 
+ 
++def _is_param_error(error: Exception) -> bool:
++    """Detect upstream 'invalid request parameters' rejections (code 1210).
++
++    Some aggregators (e.g. new-api → Zhipu glm-4v-flash) reject requests
++    that include temperature / max_tokens / timeout with HTTP 400 + code
++    1210 ("API 调用参数有误"). When that happens, retry without those
++    parameters and let the upstream use its defaults.
++
++    Added 2026-06-02 after a real failure: new-api was correctly passing
++    the request to Zhipu, but Zhipu rejected temperature=0.1 + max_tokens=2000
++    with code 1210 even though the same provider accepted text-only requests
++    with those parameters. Root cause: Zhipu's vision endpoint has a stricter
++    parameter whitelist than its text endpoint.
++    """
++    err_str = str(error).lower()
++    return any(hint in err_str for hint in (
++        "1210", "api 调用参数有误", "参数有误", "invalid param",
++        "param invalid", "unrecognized request argument",
++    ))
++
++
+ def _resize_image_for_vision(image_path: Path, mime_type: Optional[str] = None,
+                               max_base64_bytes: int = _RESIZE_TARGET_BYTES) -> str:
+     """Convert an image to a base64 data URL, auto-resizing if too large.
+@@ -821,6 +842,20 @@ async def vision_analyze_tool(
+                     temp_image_path, mime_type=detected_mime_type)
+                 messages[0]["content"][1]["image_url"]["url"] = image_data_url
+                 response = await async_call_llm(**call_kwargs)
++            elif _is_param_error(_api_err):
++                # Upstream rejected temperature/max_tokens/timeout (e.g.
++                # new-api → Zhipu glm-4v-flash returns code 1210). Retry
++                # without those parameters and let the upstream default.
++                # 2026-06-02: real failure observed and confirmed.
++                logger.info(
++                    "API rejected request as 'param invalid' (code 1210); "
++                    "retrying without temperature/max_tokens/timeout..."
++                )
++                _retry_kwargs = {
++                    k: v for k, v in call_kwargs.items()
++                    if k not in ("temperature", "max_tokens", "timeout")
++                }
++                response = await async_call_llm(**_retry_kwargs)
+             else:
+                 raise
+         
+-- 
+2.47.3
+

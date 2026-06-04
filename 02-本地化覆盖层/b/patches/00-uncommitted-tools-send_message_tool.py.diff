@@ -1,0 +1,13 @@
+diff --git a/tools/send_message_tool.py b/tools/send_message_tool.py
+index dab83b854..c57e838d9 100644
+--- a/tools/send_message_tool.py
++++ b/tools/send_message_tool.py
+@@ -139,7 +139,7 @@ SEND_MESSAGE_SCHEMA = {
+             },
+             "message": {
+                 "type": "string",
+-                "description": "The message text to send. To send an image or file, include MEDIA:<local_path> (e.g. 'MEDIA:/tmp/report.pdf') in the message — the platform will deliver it as a native media attachment."
++                "description": "The message text to send. To send an image or file, include MEDIA:<local_path> (e.g. 'MEDIA:/tmp/report.pdf') in the message. NOTE: MEDIA delivery works on Telegram/Discord; does NOT work on Feishu (use lark-cli --file for files on Feishu)."
+             }
+         },
+         "required": []

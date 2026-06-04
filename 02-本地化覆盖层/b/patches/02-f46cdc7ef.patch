@@ -1,0 +1,824 @@
+From f46cdc7ef5690f11422b61a5c97a8f8cbf44a2b4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E5=B0=8F=E6=98=8E?= <zhao@xiaoming.local>
+Date: Tue, 2 Jun 2026 19:51:28 +0800
+Subject: [PATCH] xiaoming-custom-patches: holographic-cjk, adaptive-threshold,
+ feishu-card, siliconflow-stt, vision-1210-retry, voice-log
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Dropped (dead code / no longer needed):
+- MiniMax temperature override (custom/__init__.py) — switching to DeepSeek
+- mmx-cli search fallback (web_tools.py) — mmx-cli no longer available
+- mmx-cli vision fallback (vision_tools.py) — mmx-cli no longer available
+- Backup files and third-party submodules
+---
+ agent/agent_init.py                     |   7 +
+ agent/context_compressor.py             |  43 ++++
+ agent/conversation_compression.py       |  12 +-
+ gateway/platforms/feishu.py             |  34 ++-
+ plugins/memory/holographic/retrieval.py |  86 ++++++++
+ plugins/memory/holographic/store.py     | 268 ++++++++++++++++++++++--
+ tools/transcription_tools.py            |  47 +++++
+ tools/tts_tool.py                       |  19 ++
+ tools/vision_tools.py                   |   4 +-
+ 9 files changed, 484 insertions(+), 36 deletions(-)
+
+diff --git a/agent/agent_init.py b/agent/agent_init.py
+index a5d27c0b7..2db08b246 100644
+--- a/agent/agent_init.py
++++ b/agent/agent_init.py
+@@ -1118,6 +1118,11 @@ def init_agent(
+     compression_abort_on_summary_failure = str(
+         _compression_cfg.get("abort_on_summary_failure", False)
+     ).lower() in {"true", "1", "yes"}
++    compression_adaptive = str(
++        _compression_cfg.get("adaptive_threshold", True)
++    ).lower() in {"true", "1", "yes"}
++    _max_threshold_raw = _compression_cfg.get("max_threshold_tokens")
++    max_threshold_tokens = int(_max_threshold_raw) if _max_threshold_raw is not None else None
+ 
+     # Read optional explicit context_length override for the auxiliary
+     # compression model. Custom endpoints often cannot report this via
+@@ -1333,6 +1338,8 @@ def init_agent(
+             provider=agent.provider,
+             api_mode=agent.api_mode,
+             abort_on_summary_failure=compression_abort_on_summary_failure,
++            adaptive_threshold=compression_adaptive,
++            max_threshold_tokens=max_threshold_tokens,
+         )
+     agent.compression_enabled = compression_enabled
+ 
+diff --git a/agent/context_compressor.py b/agent/context_compressor.py
+index 626368090..53a496c67 100644
+--- a/agent/context_compressor.py
++++ b/agent/context_compressor.py
+@@ -19,6 +19,7 @@ Improvements over v2:
+ import hashlib
+ import json
+ import logging
++import math
+ import re
+ import time
+ from typing import Any, Dict, List, Optional
+@@ -450,6 +451,36 @@ def _summarize_tool_result(tool_name: str, tool_args: str, tool_content: str) ->
+         first_arg += f" {k}={sv}"
+     return f"[{tool_name}]{first_arg} ({content_len:,} chars result)"
+ 
++def _adaptive_threshold_percent(
++    context_length: int,
++    max_threshold_tokens: int | None = None,
++) -> float:
++    """Calculate adaptive compression threshold based on context window size.
++
++    Uses a logarithmic curve so that:
++      -  64K context → ~0.70  (compress late, context is precious)
++      - 128K context → ~0.58
++      - 256K context → ~0.46
++      - 512K context → ~0.34
++      -   1M context → ~0.22  (compress early, plenty of room)
++
++    Clamped to [0.20, 0.75].  The caller should use ``min(config_value, adaptive)``
++    so the user's explicit threshold acts as a cap.
++
++    If *max_threshold_tokens* is provided (typically the compression model's
++    context length), the returned percentage is additionally capped so that
++    ``context_length * percentage <= max_threshold_tokens``.
++    """
++    ref = max(context_length, MINIMUM_CONTEXT_LENGTH)
++    adaptive = 0.70 - 0.12 * math.log2(ref / MINIMUM_CONTEXT_LENGTH)
++    adaptive = max(0.20, min(adaptive, 0.75))
++
++    if max_threshold_tokens is not None and context_length > 0:
++        max_pct = max_threshold_tokens / context_length
++        adaptive = min(adaptive, max_pct)
++
++    return adaptive
++
+ 
+ class ContextCompressor(ContextEngine):
+     """Default context engine — compresses conversation context via lossy summarization.
+@@ -524,6 +555,8 @@ class ContextCompressor(ContextEngine):
+         provider: str = "",
+         api_mode: str = "",
+         abort_on_summary_failure: bool = False,
++        adaptive_threshold: bool = True,
++        max_threshold_tokens: int | None = None,
+     ):
+         self.model = model
+         self.base_url = base_url
+@@ -546,6 +579,16 @@ class ContextCompressor(ContextEngine):
+             config_context_length=config_context_length,
+             provider=provider,
+         )
++        # Adaptive threshold: dynamically adjust compression trigger point
++        # based on model context window size. Larger contexts compress earlier.
++        if adaptive_threshold:
++            self.threshold_percent = min(
++                threshold_percent,
++                _adaptive_threshold_percent(
++                    self.context_length,
++                    max_threshold_tokens=max_threshold_tokens,
++                ),
++            )
+         # Floor: never compress below MINIMUM_CONTEXT_LENGTH tokens even if
+         # the percentage would suggest a lower value.  This prevents premature
+         # compression on large-context models at 50% while keeping the % sane
+diff --git a/agent/conversation_compression.py b/agent/conversation_compression.py
+index 3f6a1ecbf..3dcd03eab 100644
+--- a/agent/conversation_compression.py
++++ b/agent/conversation_compression.py
+@@ -282,11 +282,15 @@ def compress_context(
+         no-op via ``len(returned) == len(input)`` and stop the retry loop.
+     """
+     _pre_msg_count = len(messages)
++    # Get compression model info
++    _comp_model = getattr(agent, 'model', None)
++    if hasattr(agent, 'context_compressor') and agent.context_compressor:
++        _comp_model = getattr(agent.context_compressor, 'model', None) or _comp_model
+     logger.info(
+-        "context compression started: session=%s messages=%d tokens=~%s model=%s focus=%r",
++        "context compression started: session=%s messages=%d tokens=~%s model=%s focus=%r compression_model=%s",
+         agent.session_id or "none", _pre_msg_count,
+         f"{approx_tokens:,}" if approx_tokens else "unknown", agent.model,
+-        focus_topic,
++        focus_topic, _comp_model or "unknown",
+     )
+     agent._emit_status(
+         "🗜️ Compacting context — summarizing earlier conversation so I can continue..."
+@@ -464,9 +468,9 @@ def compress_context(
+         pass
+ 
+     logger.info(
+-        "context compression done: session=%s messages=%d->%d tokens=~%s",
++        "context compression done: session=%s messages=%d->%d tokens=~%s compression_model=%s",
+         agent.session_id or "none", _pre_msg_count, len(compressed),
+-        f"{_compressed_est:,}",
++        f"{_compressed_est:,}", _comp_model or "unknown",
+     )
+     return compressed, new_system_prompt
+ 
+diff --git a/gateway/platforms/feishu.py b/gateway/platforms/feishu.py
+index 698bbed54..8f4bfb409 100644
+--- a/gateway/platforms/feishu.py
++++ b/gateway/platforms/feishu.py
+@@ -1781,9 +1781,9 @@ class FeishuAdapter(BasePlatformAdapter):
+                         metadata=metadata,
+                     )
+                 except Exception as exc:
+-                    if msg_type != "post" or not _POST_CONTENT_INVALID_RE.search(str(exc)):
++                    if msg_type not in {"post", "interactive"} or not _POST_CONTENT_INVALID_RE.search(str(exc)):
+                         raise
+-                    logger.warning("[Feishu] Invalid post payload rejected by API; falling back to plain text")
++                    logger.warning("[Feishu] Invalid card payload rejected by API; falling back to plain text")
+                     response = await self._feishu_send_with_retry(
+                         chat_id=chat_id,
+                         msg_type="text",
+@@ -1792,11 +1792,11 @@ class FeishuAdapter(BasePlatformAdapter):
+                         metadata=metadata,
+                     )
+                 if (
+-                    msg_type == "post"
++                    msg_type in {"post", "interactive"}
+                     and not self._response_succeeded(response)
+                     and _POST_CONTENT_INVALID_RE.search(str(getattr(response, "msg", "") or ""))
+                 ):
+-                    logger.warning("[Feishu] Post payload rejected by API response; falling back to plain text")
++                    logger.warning("[Feishu] Card payload rejected by API response; falling back to plain text")
+                     response = await self._feishu_send_with_retry(
+                         chat_id=chat_id,
+                         msg_type="text",
+@@ -1830,7 +1830,7 @@ class FeishuAdapter(BasePlatformAdapter):
+             request = self._build_update_message_request(message_id=message_id, request_body=body)
+             response = await asyncio.to_thread(self._client.im.v1.message.update, request)
+             result = self._finalize_send_result(response, "update failed")
+-            if not result.success and msg_type == "post" and _POST_CONTENT_INVALID_RE.search(result.error or ""):
++            if not result.success and msg_type in {"post", "interactive"} and _POST_CONTENT_INVALID_RE.search(result.error or ""):
+                 logger.warning("[Feishu] Invalid post update payload rejected by API; falling back to plain text")
+                 fallback_body = self._build_update_message_body(
+                     msg_type="text",
+@@ -4314,15 +4314,31 @@ class FeishuAdapter(BasePlatformAdapter):
+     # Outbound payload construction and send pipeline
+     # =========================================================================
+ 
++    def _build_markdown_card_payload(self, content: str) -> str:
++        """Build a Feishu Card JSON 2.0 payload with markdown tag."""
++        card = {
++            "config": {"wide_screen_mode": True},
++            "header": {
++                "title": {"tag": "plain_text", "content": " "},
++                "template": "blue",
++            },
++            "elements": [
++                {
++                    "tag": "markdown",
++                    "content": content,
++                }
++            ],
++        }
++        return json.dumps(card, ensure_ascii=False)
++
+     def _build_outbound_payload(self, content: str) -> tuple[str, str]:
+-        # Feishu post-type 'md' elements do not render markdown tables; sending
+-        # table content as post causes the message to appear blank on the client.
+-        # Force plain text for anything that looks like a markdown table.
++        # Feishu cards do not render markdown tables; sending
++        # table content as card causes the message to appear blank.
+         if _MARKDOWN_TABLE_RE.search(content):
+             text_payload = {"text": content}
+             return "text", json.dumps(text_payload, ensure_ascii=False)
+         if _MARKDOWN_HINT_RE.search(content):
+-            return "post", _build_markdown_post_payload(content)
++            return "interactive", self._build_markdown_card_payload(content)
+         text_payload = {"text": content}
+         return "text", json.dumps(text_payload, ensure_ascii=False)
+ 
+diff --git a/plugins/memory/holographic/retrieval.py b/plugins/memory/holographic/retrieval.py
+index a673dcef8..75410f2d2 100644
+--- a/plugins/memory/holographic/retrieval.py
++++ b/plugins/memory/holographic/retrieval.py
+@@ -65,6 +65,10 @@ class FactRetriever:
+         # Stage 1: Get FTS5 candidates (more than limit for reranking headroom)
+         candidates = self._fts_candidates(query, category, min_trust, limit * 3)
+ 
++        # Stage 1b: Fallback for Chinese — FTS5 can't segment CJK
++        if not candidates:
++            candidates = self._like_candidates(query, category, min_trust, limit * 3)
++
+         if not candidates:
+             return []
+ 
+@@ -109,6 +113,7 @@ class FactRetriever:
+         # Strip raw HRR bytes — callers expect JSON-serializable dicts
+         for fact in results:
+             fact.pop("hrr_vector", None)
++            fact.pop("emb_vector", None)
+         return results
+ 
+     def probe(
+@@ -478,6 +483,87 @@ class FactRetriever:
+         scored.sort(key=lambda x: x["score"], reverse=True)
+         return scored[:limit]
+ 
++    def _like_candidates(
++        self,
++        query: str,
++        category: str | None,
++        min_trust: float,
++        limit: int,
++    ) -> list[dict]:
++        """Fallback: LIKE OR + character-overlap rerank for Chinese queries.
++
++        FTS5 unicode61 tokenizer can't segment CJK characters, so full-text
++        MATCH returns empty for pure-Chinese queries. This method falls back
++        to SQL LIKE with OR conditions on each Chinese 2+ char word, then
++        reranks by character-overlap ratio + word-match count.
++
++        Returns same dict schema as _fts_candidates (fact fields + fts_rank).
++        """
++        import re
++
++        conn = self.store._conn
++
++        # Extract Chinese words (2+ chars) from query
++        words = re.findall(r"[\u4e00-\u9fff]{2,}", query)
++        if not words:
++            return []
++
++        # Build LIKE OR conditions
++        conditions = []
++        params: list = []
++        for w in words:
++            conditions.append("(f.content LIKE ? OR f.tags LIKE ?)")
++            params.extend([f"%{w}%", f"%{w}%"])
++
++        where_or = " OR ".join(conditions)
++        where_parts = [f"({where_or})"]
++
++        if category:
++            where_parts.append("f.category = ?")
++            params.append(category)
++        where_parts.append("f.trust_score >= ?")
++        params.append(min_trust)
++
++        where_sql = " AND ".join(where_parts)
++        params.append(limit)
++
++        sql = f"""
++            SELECT f.*
++            FROM facts f
++            WHERE {where_sql}
++            LIMIT ?
++        """
++
++        try:
++            rows = conn.execute(sql, params).fetchall()
++        except Exception:
++            return []
++
++        if not rows:
++            return []
++
++        # Character-overlap rerank (better than Jaccard for CJK)
++        q_chars = set(ch for ch in query if "\u4e00" <= ch <= "\u9fff")
++        q_words = set(words)
++
++        results = []
++        for row in rows:
++            fact = dict(row)
++            fact["fts_rank"] = 0.5  # neutral rank (not FTS5)
++
++            content = fact.get("content", "")
++            content_chars = set(ch for ch in content if "\u4e00" <= ch <= "\u9fff")
++            char_overlap = (len(q_chars & content_chars) / len(q_chars)) if q_chars else 0
++            word_matches = sum(1 for w in q_words if w in content)
++
++            fact["_char_overlap"] = char_overlap
++            fact["_word_matches"] = word_matches
++            results.append(fact)
++
++        # Sort by word-matches desc, then char-overlap desc
++        results.sort(key=lambda x: (x["_word_matches"], x["_char_overlap"]), reverse=True)
++        return results[:limit]
++
+     def _fts_candidates(
+         self,
+         query: str,
+diff --git a/plugins/memory/holographic/store.py b/plugins/memory/holographic/store.py
+index 67628102d..60ce06387 100644
+--- a/plugins/memory/holographic/store.py
++++ b/plugins/memory/holographic/store.py
+@@ -44,26 +44,8 @@ CREATE TABLE IF NOT EXISTS fact_entities (
+ CREATE INDEX IF NOT EXISTS idx_facts_trust    ON facts(trust_score DESC);
+ CREATE INDEX IF NOT EXISTS idx_facts_category ON facts(category);
+ CREATE INDEX IF NOT EXISTS idx_entities_name  ON entities(name);
+-
+ CREATE VIRTUAL TABLE IF NOT EXISTS facts_fts
+-    USING fts5(content, tags, content=facts, content_rowid=fact_id);
+-
+-CREATE TRIGGER IF NOT EXISTS facts_ai AFTER INSERT ON facts BEGIN
+-    INSERT INTO facts_fts(rowid, content, tags)
+-        VALUES (new.fact_id, new.content, new.tags);
+-END;
+-
+-CREATE TRIGGER IF NOT EXISTS facts_ad AFTER DELETE ON facts BEGIN
+-    INSERT INTO facts_fts(facts_fts, rowid, content, tags)
+-        VALUES ('delete', old.fact_id, old.content, old.tags);
+-END;
+-
+-CREATE TRIGGER IF NOT EXISTS facts_au AFTER UPDATE ON facts BEGIN
+-    INSERT INTO facts_fts(facts_fts, rowid, content, tags)
+-        VALUES ('delete', old.fact_id, old.content, old.tags);
+-    INSERT INTO facts_fts(rowid, content, tags)
+-        VALUES (new.fact_id, new.content, new.tags);
+-END;
++    USING fts5(content, tags);
+ 
+ CREATE TABLE IF NOT EXISTS memory_banks (
+     bank_id    INTEGER PRIMARY KEY AUTOINCREMENT,
+@@ -73,6 +55,13 @@ CREATE TABLE IF NOT EXISTS memory_banks (
+     fact_count INTEGER DEFAULT 0,
+     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+ );
++
++CREATE TABLE IF NOT EXISTS fact_bigrams (
++    bigram  TEXT    NOT NULL,
++    fact_id INTEGER NOT NULL REFERENCES facts(fact_id),
++    PRIMARY KEY (bigram, fact_id)
++);
++CREATE INDEX IF NOT EXISTS idx_bigram_lookup ON fact_bigrams(bigram);
+ """
+ 
+ # Trust adjustment constants
+@@ -91,6 +80,26 @@ _RE_AKA          = re.compile(
+ )
+ 
+ 
++_CJK_PATTERN = re.compile(r'[\u4e00-\u9fff]')
++
++
++def _space_cjk(text: str) -> str:
++    """Insert spaces between consecutive CJK characters for FTS5 unicode61.
++
++    The unicode61 tokenizer treats consecutive CJK characters as a single
++    token, making sub-word search impossible. Inserting spaces between each
++    CJK character lets unicode61 tokenize them individually.
++
++    Non-CJK text passes through unchanged.
++    """
++    if not _CJK_PATTERN.search(text):
++        return text
++    result = re.sub(r'([\u4e00-\u9fff])(?=[\u4e00-\u9fff])', r'\1 ', text)
++    result = re.sub(r'([\u4e00-\u9fff])([^\u4e00-\u9fff\s])', r'\1 \2', result)
++    result = re.sub(r'([^\u4e00-\u9fff\s])([\u4e00-\u9fff])', r'\1 \2', result)
++    return result
++
++
+ def _clamp_trust(value: float) -> float:
+     return max(_TRUST_MIN, min(_TRUST_MAX, value))
+ 
+@@ -170,6 +179,13 @@ class MemoryStore:
+                 )
+                 self._conn.commit()
+                 fact_id: int = cur.lastrowid  # type: ignore[assignment]
++                # Insert into FTS5 index with CJK-spaced content
++                fts_content = _space_cjk(content)
++                self._conn.execute(
++                    "INSERT INTO facts_fts(rowid, content, tags) VALUES (?, ?, ?)",
++                    (fact_id, fts_content, tags),
++                )
++                self._conn.commit()
+             except sqlite3.IntegrityError:
+                 # Duplicate content — return existing id
+                 row = self._conn.execute(
+@@ -185,6 +201,8 @@ class MemoryStore:
+             # Compute HRR vector after entity linking
+             self._compute_hrr_vector(fact_id, content)
+             self._rebuild_bank(category)
++            # Update bigram index for fuzzy search
++            self._update_bigrams_for_fact(fact_id, content)
+ 
+             return fact_id
+ 
+@@ -205,7 +223,16 @@ class MemoryStore:
+             if not query:
+                 return []
+ 
+-            params: list = [query, min_trust]
++            # Space CJK characters so FTS5 unicode61 tokenizer can match
++            spaced = _space_cjk(query)
++            # CJK: use phrase match (adjacent tokens) for precision;
++            # non-CJK: bare query (implicit OR works fine for English)
++            if _CJK_PATTERN.search(query):
++                fts_query = f'"{spaced}"'
++            else:
++                fts_query = spaced
++
++            params: list = [fts_query, min_trust]
+             category_clause = ""
+             if category is not None:
+                 category_clause = "AND f.category = ?"
+@@ -228,6 +255,38 @@ class MemoryStore:
+             rows = self._conn.execute(sql, params).fetchall()
+             results = [self._row_to_dict(r) for r in rows]
+ 
++            # Fallback 1: Try FTS5 AND when phrase match returns nothing for CJK
++            if not results and _CJK_PATTERN.search(query):
++                and_terms = " AND ".join(spaced.split())
++                and_params: list = [and_terms, min_trust]
++                if category is not None:
++                    and_params.append(category)
++                and_params.append(limit)
++                and_sql = f"""
++                    SELECT f.fact_id, f.content, f.category, f.tags,
++                           f.trust_score, f.retrieval_count, f.helpful_count,
++                           f.created_at, f.updated_at
++                    FROM facts f
++                    JOIN facts_fts fts ON fts.rowid = f.fact_id
++                    WHERE facts_fts MATCH ?
++                      AND f.trust_score >= ?
++                      {category_clause}
++                    ORDER BY fts.rank, f.trust_score DESC
++                    LIMIT ?
++                """
++                try:
++                    rows = self._conn.execute(and_sql, and_params).fetchall()
++                    results = [self._row_to_dict(r) for r in rows]
++                except Exception:
++                    results = []
++
++            # Fallback 2: Character bigram Jaccard similarity for CJK queries
++            if not results and _CJK_PATTERN.search(query):
++                try:
++                    results = self._bigram_search(query, limit, category, min_trust)
++                except Exception:
++                    results = []
++
+             if results:
+                 ids = [r["fact_id"] for r in results]
+                 placeholders = ",".join("?" * len(ids))
+@@ -282,8 +341,27 @@ class MemoryStore:
+             )
+             self._conn.commit()
+ 
+-            # If content changed, re-extract entities
++            # If content changed, update FTS5 index with CJK-spaced content
++            if content is not None:
++                fts_content = _space_cjk(content.strip())
++                # Use new tags if provided, otherwise keep existing
++                if tags is not None:
++                    fts_tags = tags
++                else:
++                    existing = self._conn.execute(
++                        "SELECT tags FROM facts WHERE fact_id = ?", (fact_id,)
++                    ).fetchone()
++                    fts_tags = existing["tags"] or "" if existing else ""
++                self._conn.execute("DELETE FROM facts_fts WHERE rowid = ?", (fact_id,))
++                self._conn.execute(
++                    "INSERT INTO facts_fts(rowid, content, tags) VALUES (?, ?, ?)",
++                    (fact_id, fts_content, fts_tags),
++                )
++                self._conn.commit()
++
++            # If content changed, update bigram index and re-extract entities
+             if content is not None:
++                self._update_bigrams_for_fact(fact_id, content.strip())
+                 self._conn.execute(
+                     "DELETE FROM fact_entities WHERE fact_id = ?", (fact_id,)
+                 )
+@@ -315,6 +393,8 @@ class MemoryStore:
+             self._conn.execute(
+                 "DELETE FROM fact_entities WHERE fact_id = ?", (fact_id,)
+             )
++            self._conn.execute("DELETE FROM facts_fts WHERE rowid = ?", (fact_id,))
++            self._conn.execute("DELETE FROM fact_bigrams WHERE fact_id = ?", (fact_id,))
+             self._conn.execute("DELETE FROM facts WHERE fact_id = ?", (fact_id,))
+             self._conn.commit()
+             self._rebuild_bank(row["category"])
+@@ -471,6 +551,103 @@ class MemoryStore:
+         )
+         self._conn.commit()
+ 
++    def _update_bigrams_for_fact(self, fact_id: int, content: str) -> None:
++        """Extract and store character bigrams from raw content for fuzzy search."""
++        self._conn.execute(
++            "DELETE FROM fact_bigrams WHERE fact_id = ?", (fact_id,)
++        )
++        cjk_only = re.sub(r'[^一-鿿]', '', content)
++        bigrams = set()
++        for i in range(len(cjk_only) - 1):
++            bigrams.add(cjk_only[i:i+2])
++        if bigrams:
++            self._conn.executemany(
++                "INSERT OR IGNORE INTO fact_bigrams VALUES (?, ?)",
++                [(bg, fact_id) for bg in bigrams],
++            )
++        self._conn.commit()
++
++    def _bigram_search(
++        self,
++        query: str,
++        limit: int = 10,
++        category: str | None = None,
++        min_trust: float = 0.3,
++    ) -> list[dict]:
++        """Fallback search using character bigram Jaccard similarity.
++
++        Extracts CJK character bigrams from the query, looks them up in the
++        pre-computed fact_bigrams index, and scores facts by match ratio:
++        matched_bigrams / total_query_bigrams.
++
++        Only activates for queries with 2+ CJK characters.
++        """
++        cjk_only = re.sub(r'[^\u4e00-\u9fff]', '', query)
++        if len(cjk_only) < 2:
++            return []
++
++        q_bigrams: set[str] = set()
++        for i in range(len(cjk_only) - 1):
++            q_bigrams.add(cjk_only[i:i+2])
++
++        placeholders = ",".join("?" * len(q_bigrams))
++        params: list[str] = list(q_bigrams)
++
++        rows = self._conn.execute(
++            f"""
++            SELECT b.fact_id, b.bigram
++            FROM fact_bigrams b
++            JOIN facts f ON f.fact_id = b.fact_id
++            WHERE b.bigram IN ({placeholders})
++              AND f.trust_score >= ?
++            """,
++            params + [min_trust],
++        ).fetchall()
++
++        from collections import Counter
++        fact_matches: Counter = Counter()
++        for r in rows:
++            fact_matches[r["fact_id"]] += 1
++
++        if not fact_matches:
++            return []
++
++        scored: list[tuple[int, float]] = []
++        for fid, match_count in fact_matches.most_common(limit * 3):
++            ratio = match_count / len(q_bigrams)
++            if ratio >= 0.2:
++                scored.append((fid, ratio))
++
++        scored.sort(key=lambda x: -x[1])
++        scored = scored[:limit]
++
++        if not scored:
++            return []
++
++        id_placeholders = ",".join("?" * len(scored))
++        ids = [fid for fid, _ in scored]
++        cat_clause = " AND f.category = ?" if category is not None else ""
++
++        rows = self._conn.execute(
++            f"""
++            SELECT f.fact_id, f.content, f.category, f.tags,
++                   f.trust_score, f.retrieval_count, f.helpful_count,
++                   f.created_at, f.updated_at
++            FROM facts f
++            WHERE f.fact_id IN ({id_placeholders})
++              {cat_clause}
++            """,
++            ids + ([category] if category is not None else []),
++        ).fetchall()
++
++        row_map = {r["fact_id"]: dict(r) for r in rows}
++        final: list[dict] = []
++        for fid, _ in scored:
++            if fid in row_map:
++                final.append(row_map[fid])
++
++        return final
++
+     def _compute_hrr_vector(self, fact_id: int, content: str) -> None:
+         """Compute and store HRR vector for a fact. No-op if numpy unavailable."""
+         with self._lock:
+@@ -559,6 +736,55 @@ class MemoryStore:
+ 
+             return len(rows)
+ 
++    def rebuild_indexes(self) -> dict[str, int]:
++        """Full rebuild: FTS5 index + bigram index.
++
++        Drops and recreates both indexes from scratch. Call this once after
++        deploying CJK spacing or bigram index patches.
++
++        Returns dict with 'fts' and 'bigrams' counts.
++        """
++        result = {}
++        with self._lock:
++            # Rebuild FTS5
++            self._conn.executescript("""
++                DROP TABLE IF EXISTS facts_fts;
++                CREATE VIRTUAL TABLE facts_fts USING fts5(content, tags);
++            """)
++            rows = self._conn.execute(
++                "SELECT fact_id, content, tags FROM facts ORDER BY fact_id"
++            ).fetchall()
++            for row in rows:
++                fts_content = _space_cjk(row["content"])
++                self._conn.execute(
++                    "INSERT INTO facts_fts(rowid, content, tags) VALUES (?, ?, ?)",
++                    (row["fact_id"], fts_content, row["tags"] or ""),
++                )
++            self._conn.commit()
++            result["fts"] = len(rows)
++
++            # Rebuild bigram index
++            self._conn.execute("DELETE FROM fact_bigrams")
++            all_facts = self._conn.execute(
++                "SELECT fact_id, content FROM facts"
++            ).fetchall()
++            total_bigrams = 0
++            for row in all_facts:
++                cjk_only = re.sub(r'[^一-鿿]', '', row["content"])
++                bigrams = set()
++                for i in range(len(cjk_only) - 1):
++                    bigrams.add(cjk_only[i:i+2])
++                if bigrams:
++                    self._conn.executemany(
++                        "INSERT OR IGNORE INTO fact_bigrams VALUES (?, ?)",
++                        [(bg, row["fact_id"]) for bg in bigrams],
++                    )
++                    total_bigrams += len(bigrams)
++            self._conn.commit()
++            result["bigrams"] = total_bigrams
++
++        return result
++
+     # ------------------------------------------------------------------
+     # Utilities
+     # ------------------------------------------------------------------
+diff --git a/tools/transcription_tools.py b/tools/transcription_tools.py
+index d741530d3..245dc8692 100644
+--- a/tools/transcription_tools.py
++++ b/tools/transcription_tools.py
+@@ -91,6 +91,8 @@ COMMON_LOCAL_BIN_DIRS = ("/opt/homebrew/bin", "/usr/local/bin")
+ GROQ_BASE_URL = os.getenv("GROQ_BASE_URL", "https://api.groq.com/openai/v1")
+ OPENAI_BASE_URL = os.getenv("STT_OPENAI_BASE_URL", "https://api.openai.com/v1")
+ XAI_STT_BASE_URL = os.getenv("XAI_STT_BASE_URL", "https://api.x.ai/v1")
++SILICONFLOW_STT_BASE_URL = "https://api.siliconflow.cn/v1"
++DEFAULT_SILICONFLOW_STT_MODEL = "FunAudioLLM/SenseVoiceSmall"
+ 
+ SUPPORTED_FORMATS = {".mp3", ".mp4", ".mpeg", ".mpga", ".m4a", ".wav", ".webm", ".ogg", ".aac", ".flac"}
+ LOCAL_NATIVE_AUDIO_FORMATS = {".wav", ".aiff", ".aif"}
+@@ -806,6 +808,47 @@ def _transcribe_xai(file_path: str, model_name: str) -> Dict[str, Any]:
+         return {"success": False, "transcript": "", "error": f"xAI STT transcription failed: {e}"}
+ 
+ 
++def _transcribe_siliconflow(file_path: str, model_name: str) -> Dict[str, Any]:
++    """Transcribe using SiliconFlow SenseVoice API (free tier, supports Chinese)."""
++    api_key = os.getenv("SILICONFLOW_API_KEY")
++    if not api_key:
++        return {"success": False, "transcript": "", "error": "SILICONFLOW_API_KEY not set in .env"}
++
++    try:
++        import requests
++
++        base_url = os.getenv("SILICONFLOW_STT_BASE_URL", SILICONFLOW_STT_BASE_URL)
++        with open(file_path, "rb") as audio_file:
++            response = requests.post(
++                f"{base_url}/audio/transcriptions",
++                headers={"Authorization": f"Bearer {api_key}"},
++                files={"file": (Path(file_path).name, audio_file)},
++                data={"model": model_name, "response_format": "json"},
++                timeout=30,
++            )
++
++        if response.status_code == 200:
++            result = response.json()
++            transcript_text = result.get("text", "").strip()
++            if transcript_text:
++                logger.info(
++                    "Transcribed %s via SiliconFlow SenseVoice (%d chars)",
++                    Path(file_path).name, len(transcript_text),
++                )
++                return {"success": True, "transcript": transcript_text}
++            return {"success": False, "transcript": "", "error": "SiliconFlow returned empty transcript"}
++
++        return {
++            "success": False,
++            "transcript": "",
++            "error": f"SiliconFlow API error (HTTP {response.status_code}): {response.text[:200]}",
++        }
++
++    except Exception as e:
++        logger.error("SiliconFlow STT transcription failed: %s", e, exc_info=True)
++        return {"success": False, "transcript": "", "error": f"SiliconFlow STT failed: {e}"}
++
++
+ # ---------------------------------------------------------------------------
+ # Public API
+ # ---------------------------------------------------------------------------
+@@ -879,6 +922,10 @@ def transcribe_audio(file_path: str, model: Optional[str] = None) -> Dict[str, A
+         model_name = model or "grok-stt"
+         return _transcribe_xai(file_path, model_name)
+ 
++    if provider == "siliconflow":
++        model_name = model or DEFAULT_SILICONFLOW_STT_MODEL
++        return _transcribe_siliconflow(file_path, model_name)
++
+     # No provider available
+     return {
+         "success": False,
+diff --git a/tools/tts_tool.py b/tools/tts_tool.py
+index 469cb6608..e77762b4f 100644
+--- a/tools/tts_tool.py
++++ b/tools/tts_tool.py
+@@ -1860,6 +1860,25 @@ def text_to_speech_tool(
+         file_size = os.path.getsize(file_str)
+         logger.info("TTS audio saved: %s (%s bytes, provider: %s)", file_str, f"{file_size:,}", provider)
+ 
++        # Log voice transcript for cross-referencing with session_search
++        try:
++            from pathlib import Path as _Path
++            _log_script = _Path.home() / ".hermes" / "scripts" / "voice_transcript_log.py"
++            if _log_script.exists():
++                import importlib.util as _iu, uuid as _uuid
++                _spec = _iu.spec_from_file_location("voice_transcript_log", _log_script)
++                _mod = _iu.module_from_spec(_spec)
++                _spec.loader.exec_module(_mod)
++                _session_id = ""
++                try:
++                    from gateway.session_context import get_session_env
++                    _session_id = get_session_env("HERMES_SESSION_ID", "")
++                except Exception:
++                    pass
++                _mod.log_voice(text=text, voice_id=voice, session_id=_session_id)
++        except Exception:
++            pass  # Voice log must never break TTS flow
++
+         # Build response with MEDIA tag for platform delivery
+         media_tag = f"MEDIA:{file_str}"
+         if voice_compatible:
+diff --git a/tools/vision_tools.py b/tools/vision_tools.py
+index 4c4836cfd..629f22e85 100644
+--- a/tools/vision_tools.py
++++ b/tools/vision_tools.py
+@@ -751,7 +751,7 @@ async def vision_analyze_tool(
+         detected_mime_type = _detect_image_mime_type(temp_image_path)
+         if not detected_mime_type:
+             raise ValueError("Only real image files are supported for vision analysis.")
+-        
++
+         # Convert image to base64 — send at full resolution first.
+         # If the provider rejects it as too large, we auto-resize and retry.
+         logger.info("Converting image to base64...")
+@@ -890,7 +890,7 @@ async def vision_analyze_tool(
+     except Exception as e:
+         error_msg = f"Error analyzing image: {str(e)}"
+         logger.error("%s", error_msg, exc_info=True)
+-        
++
+         # Detect vision capability errors — give the model a clear message
+         # so it can inform the user instead of a cryptic API error.
+         err_str = str(e).lower()
+-- 
+2.47.3
+

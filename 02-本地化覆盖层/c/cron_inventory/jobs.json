@@ -1,0 +1,991 @@
+{
+  "jobs": [
+    {
+      "id": "5012300806ec",
+      "name": "Disk Cleanup",
+      "prompt": "\n\u4f60\u662f\u5c0f\u660e\u7684\u78c1\u76d8\u6e05\u7406\u4efb\u52a1\u3002\n\u6267\u884c\u811a\u672c ~/.hermes/scripts/cleanup.py \u5e76\u62a5\u544a\u7ed3\u679c\u3002\n\u5982\u679c\u811a\u672c\u6267\u884c\u6210\u529f\u4e14\u6709\u6587\u4ef6\u88ab\u6e05\u7406\uff0c\u8f93\u51fa\u7b80\u8981\u603b\u7ed3\uff08\u6e05\u7406\u4e86\u54ea\u4e9b\u76ee\u5f55\u3001\u91ca\u653e\u4e86\u591a\u5c11\u7a7a\u95f4\uff09\u3002\n\u5982\u679c\u6ca1\u6709\u6587\u4ef6\u9700\u8981\u6e05\u7406\uff0c\u8f93\u51fa `[SILENT]` \u7ec8\u6b62\u3002\n",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "cleanup.py",
+      "schedule": {
+        "kind": "cron",
+        "expr": "10 9 * * 0",
+        "display": "10 9 * * 0"
+      },
+      "schedule_display": "10 9 * * 0",
+      "repeat": {
+        "times": 9999,
+        "completed": 7
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-17T23:27:35.483917+08:00",
+      "next_run_at": "2026-06-07T09:10:00+08:00",
+      "last_run_at": "2026-05-31T09:11:09.666075+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu",
+      "origin": null
+    },
+    {
+      "id": "9ff45a29decc",
+      "name": "\u5b63\u5ea6\u57fa\u91d1\u6c60\u8bc4\u5206\u5feb\u7167",
+      "prompt": "\u4f60\u662f\u5c0f\u660e\u3002\u6267\u884c\u4ee5\u4e0b\u4efb\u52a1\uff1a\n\n**\u7b2c\u4e00\u6b65\uff1a\u6301\u4ed3\u4fe1\u53f7\u76d1\u63a7**\n```bash\npython3 ~/.hermes/scripts/position_monitor.py\n```\n\n**\u6301\u4ed3\u57fa\u91d1\uff085\u53ea\uff09**\uff1a\n- 008163@35% \u5357\u65b9\u6807\u666e\u7ea2\u5229\u4f4e\u6ce250ETF\u8054\u63a5A\n- 013309@27.5% \u6613\u65b9\u8fbe\u6052\u751f\u79d1\u6280ETF\u8054\u63a5C\n- 017057@18% \u5609\u5b9e\u56fd\u8bc1\u7eff\u8272\u7535\u529bETF\u53d1\u8d77\u8054\u63a5C\n- 004598@15% \u5357\u65b9\u4e2d\u8bc1\u94f6\u884cETF\u53d1\u8d77\u8054\u63a5C\n- 001632@2.5% \u5929\u5f18\u4e2d\u8bc1\u98df\u54c1\u996e\u6599ETF\u8054\u63a5C\n\n> \u26a0\ufe0f 2026-05-29 \u4fee\u6b63\uff1a\u6b63\u786e\u6301\u4ed3\u6765\u81ea USER.md\n\n**\u7b2c\u4e8c\u6b65\uff1a\u8bfb\u53d6\u6301\u4ed3\u4fe1\u53f7\u6587\u4ef6**\n```bash\ncat ~/.hermes/data/position_signals/latest.json\n```\n\n**\u7b2c\u4e09\u6b65\uff1a\u8bfb\u53d6\u63a2\u98ce\u5171\u4eab\u7f13\u5b58**\n```bash\ncat ~/.hermes/data/investment/wab/cache/sw_momentum.json\n```\n\n\u6839\u636e\u4ee5\u4e0a\u6570\u636e\uff0c\u7ed9\u51fa\u64cd\u4f5c\u5efa\u8bae\u3002",
+      "skills": [
+        "investment/shizhi-model"
+      ],
+      "skill": "investment/shizhi-model",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * 1",
+        "display": "0 9 * * 1"
+      },
+      "schedule_display": "0 9 * * 1",
+      "repeat": {
+        "times": null,
+        "completed": 6
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-20T09:52:58.682888+08:00",
+      "next_run_at": "2026-06-08T09:00:00+08:00",
+      "last_run_at": "2026-06-01T09:01:11.187998+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": null
+    },
+    {
+      "id": "a07f4de205a5",
+      "name": "\u6295\u8d44\u5468\u62a5\u6d41\u6c34\u7ebf\uff08A\u80a1+\u6e2f\u80a1\uff09",
+      "prompt": "\u4f60\u662f\u5c0f\u660e\u3002\u6267\u884c\u6295\u8d44\u6d41\u6c34\u7ebf\u4efb\u52a1\uff1a\u6316\u5457\u2192\u65f6\u503c\u9a8c\u8d28\u91cf\u2192\u63a2\u98ce\u7ba1\u6301\u4ed3\u2192\u98de\u4e66\u7535\u5b50\u8868\u683c\u53d1\u9001\u3002\n\n**\u6301\u4ed3\u57fa\u91d1\uff085\u53ea\uff09**\uff1a\n- 008163@35% \u5357\u65b9\u6807\u666e\u7ea2\u5229\u4f4e\u6ce250ETF\u8054\u63a5A\n- 013309@27.5% \u6613\u65b9\u8fbe\u6052\u751f\u79d1\u6280ETF\u8054\u63a5C\n- 017057@18% \u5609\u5b9e\u56fd\u8bc1\u7eff\u8272\u7535\u529bETF\u53d1\u8d77\u8054\u63a5C\n- 004598@15% \u5357\u65b9\u4e2d\u8bc1\u94f6\u884cETF\u53d1\u8d77\u8054\u63a5C\n- 001632@2.5% \u5929\u5f18\u4e2d\u8bc1\u98df\u54c1\u996e\u6599ETF\u8054\u63a5C\n\n> \u26a0\ufe0f 2026-05-29 \u4fee\u6b63\uff1a\u6b63\u786e\u6301\u4ed3\u6765\u81ea USER.md\n\n**\u7b2c\u4e00\u6b65\uff1a\u8fd0\u884c\u6316\u5457\u626b\u63cf**\n```bash\npython3 ~/.hermes/data/investment/wab/wab_scanner.py --mode weekly --push-feishu\n```\n\n**\u7b2c\u4e8c\u6b65\uff1a\u8fd0\u884c\u63a2\u98ce\u626b\u63cf**\n```bash\npython3 ~/.hermes/data/investment/tanfeng/tanfeng_scanner.py --mode weekly\n```\n\n**\u7b2c\u4e09\u6b65\uff1a\u5408\u5e76\u6570\u636e\u5e76\u751f\u6210\u98de\u4e66\u7535\u5b50\u8868\u683c**\n\u8bfb\u53d6\u7f13\u5b58\u6570\u636e\uff0c\u751f\u6210\u5305\u542b\u4ee5\u4e0b\u5185\u5bb9\u7684\u8868\u683c\uff1a\n- Sheet1: \u673a\u4f1a\u53d1\u73b0\uff08\u6316\u5457\u4f4e\u4f30\u884c\u4e1a+\u5019\u9009ETF\uff09\n- Sheet2: \u6301\u4ed3\u76d1\u63a7\uff08\u6301\u4ed3\u57fa\u91d1\u63a2\u98ce\u8bc4\u5206\uff09\n- Sheet3: \u98ce\u683c\u4ed3\u4f4d\n\n\u53d1\u9001\u98de\u4e66\u5361\u7247\u6458\u8981\uff0c\u9644\u8868\u683c\u94fe\u63a5\u3002\n\n**\u6ce8\u610f**\uff1a\u57fa\u91d1\u540d\u79f0\u5fc5\u987b\u5199\u5168\u79f0\uff08\u5982\"\u6613\u65b9\u8fbe\u6052\u751f\u79d1\u6280ETF\u8054\u63a5C\"\uff09\uff0c\u4e0d\u80fd\u7b80\u5199\u3002",
+      "skills": [
+        "wab",
+        "investment-style-detection",
+        "investment-pipeline"
+      ],
+      "skill": "wab",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 16 * * 5",
+        "display": "0 16 * * 5"
+      },
+      "schedule_display": "0 16 * * 5",
+      "repeat": {
+        "times": null,
+        "completed": 9
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-22T20:52:03.839853+08:00",
+      "next_run_at": "2026-06-05T16:00:00+08:00",
+      "last_run_at": "2026-05-29T16:04:06.216218+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu",
+      "origin": null
+    },
+    {
+      "id": "72b06fa651a7",
+      "name": "\u5947\u6570\u6708\u672b\u98ce\u683c\u5feb\u7167\u5237\u65b0",
+      "prompt": "\u4f60\u662f\u98ce\u683c\u63a2\u6d4b\u4efb\u52a1\uff0c\u6bcf\u6708\u6708\u672b\u81ea\u52a8\u5237\u65b0\u98ce\u683c\u5feb\u7167\u3002\n\n**\u6b65\u9aa4**\uff1a\n\n1. \u62c9\u53d621\u53ea\u57fa\u91d1\u7684\u6700\u65b0\u51c0\u503c\u6570\u636e\uff08\u901a\u8fc7 akshare fund_emu_individual \u63a5\u53e3\uff09\uff0c\u66f4\u65b0 `~/.hermes/data/investment/nav_*.json` \u6587\u4ef6\n\n2. \u8fd0\u884c `python3 ~/.hermes/data/investment/style/style_detection_v2.py`\uff0c\u66f4\u65b0 `three_layer_latest.json`\n\n3. \u8bfb\u53d6 `three_layer_latest.json`\uff0c\u8f93\u51fa\u5404\u98ce\u683c\u5206\u6570\u7b80\u62a5\uff08\u4e0d\u9700\u8981\u5206\u6790\u7ed3\u8bba\uff0c\u4ec5\u5237\u65b0\u6570\u636e\uff09\n\n4. \u4fdd\u5b58\u5feb\u7167\u8def\u5f84\uff1a`~/.hermes/data/investment/style/trade_log_template.md` \u4e2d\u7684\"\u6700\u8fd1\u8c03\u4ed3\u8bb0\u5f55\"\u90e8\u5206\u4e0d\u9700\u8981\u66f4\u65b0\uff08\u4ec5\u5728\u89e6\u53d1\u8c03\u4ed3\u65f6\u66f4\u65b0\uff09\n\n**\u4ec5\u5237\u65b0\u6570\u636e\uff0c\u4e0d\u505a\u5206\u6790\u8bc4\u4f30**\uff0c\u5206\u6790\u8bc4\u4f30\u7531\u300c\u6708\u672b\u98ce\u683c\u5feb\u7167\u4e0e\u8c03\u4ed3\u8bc4\u4f30\u300d\u4e00\u6b21\u6027\u4efb\u52a1\u5904\u7406\u3002\n\n**\u6ce8\u610f**\uff1a\u5947\u6570\u6708\uff081/3/5/7/9/11\u6708\uff09\u624d\u9700\u8981\u8fd0\u884c\uff0c\u5076\u6570\u6708\u7684\u5feb\u7167\u4f1a\u5728\u4e0b\u4e00\u6b21\u5947\u6570\u6708\u4e00\u5e76\u66f4\u65b0\u3002",
+      "skills": [
+        "investment-style-detection"
+      ],
+      "skill": "investment-style-detection",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 0 1,3,5,7,9,11 * *",
+        "display": "0 0 1,3,5,7,9,11 * *"
+      },
+      "schedule_display": "0 0 1,3,5,7,9,11 * *",
+      "repeat": {
+        "times": null,
+        "completed": 9
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-23T22:18:38.393513+08:00",
+      "next_run_at": "2026-06-07T00:00:00+08:00",
+      "last_run_at": "2026-06-05T00:00:24.354718+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": null
+    },
+    {
+      "id": "4eaca9afe14f",
+      "name": "Session \u5f52\u6863",
+      "prompt": "\u6267\u884c session \u5f52\u6863\u811a\u672c `~/.hermes/scripts/session_archive.py`\u3002\n\n\u89c4\u5219\uff1a\n- \u8d85\u8fc714\u5929\u7684 session.json \u2192 gzip \u5f52\u6863\u5230 sessions/archive/\n- \u8d85\u8fc760\u5929\u7684 .gz \u5f52\u6863 \u2192 \u5220\u9664\n- \u4fdd\u7559\u6700\u8fd114\u5929\n\n\u8f93\u51fa\u683c\u5f0f\uff1a\u62a5\u544a\u5f52\u6863\u6570\u91cf\u3001\u4fdd\u7559\u6570\u91cf/\u5927\u5c0f\u3001\u5f52\u6863\u533a\u5927\u5c0f\u3002\u5982\u65e0\u6587\u4ef6\u9700\u8981\u5f52\u6863\uff0c\u8f93\u51fa [SILENT]\u3002",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 10 * * 6",
+        "display": "0 10 * * 6"
+      },
+      "schedule_display": "0 10 * * 6",
+      "repeat": {
+        "times": null,
+        "completed": 5
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-26T08:04:05.506543+08:00",
+      "next_run_at": "2026-06-06T10:00:00+08:00",
+      "last_run_at": "2026-05-30T10:00:15.325327+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": null
+    },
+    {
+      "id": "dfd3075d2b9c",
+      "name": "\u601d\u7ef4\u534f\u8bae\u5b9a\u65f6\u68c0\u67e5",
+      "prompt": "\u4f60\u662f\u601d\u7ef4\u534f\u8bae\u5b88\u62a4\u8005\u3002\u68c0\u67e5\u5f53\u524d\u7cfb\u7edf\u72b6\u6001\uff1a\n\n1. \u8bfb\u53d6\u6700\u65b0\u4f1a\u8bdd\u7684 system_prompt\uff0c\u68c0\u67e5\u662f\u5426\u5305\u542b\u5b8c\u6574\u601d\u7ef4\u534f\u8bae\n2. \u68c0\u67e5\u5173\u952e\u8bcd\uff1a\u601d\u7ef4\u534f\u8bae\u3001\u521d\u59cb\u63a5\u89e6\u3001\u6df1\u5c42\u63a2\u7d22\u3001\u591a\u91cd\u89c6\u89d2\u3001\u6e10\u8fdb\u7406\u89e3\u3001\u5168\u7a0b\u9a8c\u8bc1\u3001\u56de\u590d\u7ed3\u6784\n3. \u68c0\u67e5\u5173\u952e\u94c1\u5f8b\uff1a\u5b89\u5168\u5e95\u7ebf\u3001\u4e3b\u52a8\u6267\u884c\u3001\u8def\u5f84\u5408\u89c4\u3001\u7cbe\u51c6\u8868\u8fbe\u3001\u5224\u65ad\u529b\u3001\u53cd\u9762\u5ba1\u67e5\u3001\u4e66\u9762\u8bb0\u5fc6\n\n\u8f93\u51fa\u683c\u5f0f\uff1a\n- system_prompt \u5b57\u6570\n- \u5404\u5173\u952e\u8bcd\u662f\u5426\u5305\u542b\uff08\u662f/\u5426\uff09\n- \u53d1\u73b0\u7684\u95ee\u9898\uff08\u5982\u6709\uff09\n- \u5efa\u8bae\uff08\u5982\u6709\uff09",
+      "skills": [
+        "thinking-protocol-guardian"
+      ],
+      "skill": "thinking-protocol-guardian",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * *",
+        "display": "0 9 * * *"
+      },
+      "schedule_display": "0 9 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 448
+      },
+      "enabled": false,
+      "state": "paused",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-26T16:01:33.972940+08:00",
+      "next_run_at": "2026-05-26T09:00:00+08:00",
+      "last_run_at": "2026-05-25T09:00:33.981017+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": null
+    },
+    {
+      "id": "a93008628135",
+      "name": "\u57fa\u91d1\u51c0\u503c\u8ffd\u8e2a\u5468\u62a5",
+      "prompt": "\u6267\u884c\u4ee5\u4e0b\u6b65\u9aa4\uff1a\n\n1. \u8fd0\u884c `python3 /tmp/hermes-fund-tracker.py`\uff0c\u83b7\u53d6\u4ee5\u4e0b5\u53ea\u6301\u4ed3\u57fa\u91d1\u7684\u6700\u65b0\u51c0\u503c\u6570\u636e\uff08\u57fa\u91d1\u540d\u79f0\u4ece ~/.hermes/data/investment/fund_names.json \u52a8\u6001\u8bfb\u53d6\uff0c\u7981\u6b62\u5728prompt\u91cc\u786c\u7f16\u7801\u57fa\u91d1\u540d\u79f0\uff09\uff1a\n   - 008163\uff08\u6301\u4ed335%\uff09\n   - 004598\uff08\u6301\u4ed315%\uff09\n   - 017057\uff08\u6301\u4ed319%\uff09\n   - 013309\uff08\u6301\u4ed328%\uff09\n   - 001632\uff08\u6301\u4ed33%\uff09\n\n2. \u5982\u679c\u4e0a\u8ff0\u811a\u672c\u4e0d\u5b58\u5728\u6216\u5931\u8d25\uff0c\u6539\u7528 akshare \u76f4\u63a5\u62c9\u53d6\uff1a\n   ```python\n   import akshare as ak\n   codes = [\"008163\", \"004598\", \"017057\", \"013309\", \"001632\"]\n   for code in codes:\n       df = ak.fund_open_fund_info_em(fund=code, indicator=\"\u5355\u4f4d\u51c0\u503c\u8d70\u52bf\")\n       print(code, df.tail(3))\n   ```\n\n3. \u8bfb\u53d6\u6700\u65b0\u51c0\u503c\uff0c\u8ba1\u7b97\u5404\u57fa\u91d1\u8fd1\u671f\u6da8\u8dcc\u5e45\n\n4. \u751f\u6210\u98de\u4e66\u5361\u7247\u62a5\u544a\uff0c\u53d1\u9001\u5230 home channel\uff08oc_79865a665089b533d9a958f290f50904\uff09\uff1a\n   - \u6807\u9898\uff1a\u300c\ud83d\udcca \u6301\u4ed3\u57fa\u91d1\u5468\u62a5 YYYY-MM-DD\u300d\n   - \u5c55\u793a5\u53ea\u57fa\u91d1\uff1a\u57fa\u91d1\u540d\u79f0\u3001\u4ee3\u7801\u3001\u6700\u65b0\u51c0\u503c\u3001\u8fd1\u671f\u6da8\u8dcc\u5e45\uff08\u8fd11\u5468/\u8fd11\u6708\uff09\n   - \u7ed3\u5408\u96ea\u7403\u70ed\u70b9\uff0c\u5bf9\u5404\u57fa\u91d1\u7ed9\u51fa\u64cd\u4f5c\u5efa\u8bae\uff08\u2705\u6301\u6709/\u26a0\ufe0f\u89c2\u5bdf/\ud83d\udd34\u51cf\u4ed3\uff09\n\n5. \u5982\u679c akshare \u6570\u636e\u62c9\u53d6\u5931\u8d25\uff0c\u5728\u5361\u7247\u4e2d\u6807\u6ce8\u300c\u6570\u636e\u83b7\u53d6\u5931\u8d25\u300d\u4f46\u4ecd\u53d1\u9001\u5361\u7247",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "10 9 * * 5",
+        "display": "10 9 * * 5"
+      },
+      "schedule_display": "10 9 * * 5",
+      "repeat": {
+        "times": null,
+        "completed": 5
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-29T10:44:50.057576+08:00",
+      "next_run_at": "2026-06-05T09:10:00+08:00",
+      "last_run_at": "2026-05-29T09:11:45.843079+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu:oc_79865a665089b533d9a958f290f50904",
+      "origin": null
+    },
+    {
+      "id": "9ef7a53fed99",
+      "name": "\u538b\u7f29\u5065\u5eb7\u68c0\u67e5",
+      "prompt": "\u6267\u884c ~/.hermes/scripts/check_compression_health.py\uff0c\u8f93\u51fa\u68c0\u67e5\u7ed3\u679c\u3002",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * *",
+        "display": "0 9 * * *"
+      },
+      "schedule_display": "0 9 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 31
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-05-05T03:02:03.857711+08:00",
+      "next_run_at": "2026-06-05T09:00:00+08:00",
+      "last_run_at": "2026-06-04T09:00:51.378478+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_79865a665089b533d9a958f290f50904",
+        "chat_name": "oc_79865a665089b533d9a958f290f50904",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null
+    },
+    {
+      "id": "b14e79c6d7cb",
+      "name": "\u63a2\u98ce\u5468\u626b\u63cf\uff08A\u80a1+\u6e2f\u80a1\uff09",
+      "prompt": "## \u4efb\u52a1\uff1a\u63a2\u98ce\u884c\u4e1a\u52a8\u91cf\u626b\u63cf \u2014 A\u80a1+\u6e2f\u80a1+\u9ec4\u91d1\uff08\u6bcf\u5468\u4e94\u81ea\u52a8\u8fd0\u884c\uff09\n\n### \u76ee\u6807\n\u6bcf\u5468\u4e94\u4e0b\u5348 15:55\uff08A \u80a1\u6536\u76d8\u540e\uff09\u8fd0\u884c\u7533\u4e07\u884c\u4e1a\u52a8\u91cf\u626b\u63cf + \u6e2f\u80a1\u63a2\u98ce\u626b\u63cf + \u9ec4\u91d1ETF\u52a8\u91cf\u626b\u63cf\uff0c\u53d1\u9001\u5b8c\u6574\u98de\u4e66\u5361\u7247\u62a5\u544a\u3002\n\n### \u6267\u884c\u6b65\u9aa4\n\n**Step 1-4: \u6309 tanfeng-module + feishu-card-sender skill \u6267\u884c\u626b\u63cf\u548c\u53d1\u9001**\n\n**Step 5: \u5220\u9664\u5b9e\u4f53\u9875\u5199\u5165\uff08\u5df2\u8f6c\u79fb\u81f3\u81ea\u52a8\u6d41\u7a0b\uff09**\n\n\u626b\u63cf\u5b8c\u6210\u540e\u8f93\u51fa\"\u2705 \u626b\u63cf\u5b8c\u6210\uff0c\u65e0\u5b9e\u4f53\u9875\u5199\u5165\uff08\u6570\u636e\u5df2\u540c\u6b65\u81f3\u5171\u4eab\u7f13\u5b58\uff09\"\u3002",
+      "skills": [
+        "tanfeng-module",
+        "feishu-card-sender"
+      ],
+      "skill": "tanfeng-module",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "57 15 * * 5",
+        "display": "57 15 * * 5"
+      },
+      "schedule_display": "57 15 * * 5",
+      "repeat": {
+        "times": null,
+        "completed": 4
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-05-07T05:02:00.607165+08:00",
+      "next_run_at": "2026-06-05T15:57:00+08:00",
+      "last_run_at": "2026-05-29T15:59:35.793424+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu:oc_79865a665089b533d9a958f290f50904",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_79865a665089b533d9a958f290f50904",
+        "chat_name": "oc_79865a665089b533d9a958f290f50904",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null
+    },
+    {
+      "id": "0c0eead205ca",
+      "name": "\u6316\u5457\u5468\u626b\u63cf\uff08A\u80a1+\u6e2f\u80a1\uff09",
+      "prompt": "## \u4efb\u52a1\uff1a\u6316\u5457\u884c\u4e1a\u673a\u4f1a\u626b\u63cf \u2014 A\u80a1+\u6e2f\u80a1\uff08\u6bcf\u5468\u4e94\u81ea\u52a8\u8fd0\u884c\uff09\n\n### \u76ee\u6807\n\u6bcf\u5468\u4e94\u4e0b\u5348 16:00 \u8fd0\u884c\u7533\u4e07\u884c\u4e1aPE\u626b\u63cf + \u6e2f\u80a1\u6316\u5b9d\u626b\u63cf\uff0c\u7b5b\u9009\u4f4e\u4f30\u673a\u4f1a\uff0c\u53d1\u9001\u98de\u4e66\u5361\u7247\u62a5\u544a\u3002\n\n### \u6267\u884c\u6b65\u9aa4\n\n**Step 1-4: \u6309 wab skill + feishu-card-sender \u6267\u884c\u626b\u63cf\u548c\u53d1\u9001**\n\n**Step 5: \u5220\u9664\u5b9e\u4f53\u9875\u5199\u5165\uff08\u5df2\u8f6c\u79fb\u81f3\u81ea\u52a8\u6d41\u7a0b\uff09**\n\n\u626b\u63cf\u5b8c\u6210\u540e\u8f93\u51fa\"\u2705 \u6316\u5457\u626b\u63cf\u5b8c\u6210\uff0c\u65e0\u5b9e\u4f53\u9875\u5199\u5165\uff08\u6570\u636e\u5df2\u540c\u6b65\u81f3\u5171\u4eab\u7f13\u5b58\uff09\"\u3002",
+      "skills": [
+        "wab",
+        "feishu-card-sender"
+      ],
+      "skill": "wab",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 16 * * 5",
+        "display": "0 16 * * 5"
+      },
+      "schedule_display": "0 16 * * 5",
+      "repeat": {
+        "times": null,
+        "completed": 4
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-05-07T05:02:12.588606+08:00",
+      "next_run_at": "2026-06-05T16:00:00+08:00",
+      "last_run_at": "2026-05-29T16:01:54.893088+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu:oc_79865a665089b533d9a958f290f50904",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_79865a665089b533d9a958f290f50904",
+        "chat_name": "oc_79865a665089b533d9a958f290f50904",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null
+    },
+    {
+      "id": "6e2fc793e0a5",
+      "name": "\u65e9\u62a5",
+      "prompt": "# \u65e9\u62a5 Cron Prompt v15\uff082026-06-03 \u66f4\u65b0\uff09\n> Script Version: 2.1.0 | Updated: 2026-06-03 \u8865\u5145\u5361\u7247\u7248\u672c\n> **\u811a\u672c\u5b8c\u5168\u81ea\u4e3b\u6293\u53d6\u6570\u636e\uff0cagent \u65e0\u9700\u8c03\u7528 web_extract\u3002**\n\n## \u6267\u884c\u6b65\u9aa4\n\n### Step 1\uff1a\u8dd1\u57fa\u7840\u5361\u7247\u811a\u672c\n```bash\npython3 /home/zhao/.hermes/scripts/xueqiu_daily.py \\\n  --feishu_home \"oc_79865a665089b533d9a958f290f50904\"\n```\n\u811a\u672c\u5185\u90e8\u81ea\u4e3b\u5b8c\u6210\u6570\u636e\u91c7\u96c6+\u5361\u7247\u6e32\u67d3\uff0c\u53d1\u4e00\u5f20\u57fa\u7840\u884c\u60c5\u5361\u7247\u5230\u98de\u4e66\u3002\n\n### Step 2\uff1aagent \u53d1\u8865\u5145\u5361\u7247\uff08\u516d\u98ce\u4f53\u7cfb+\u64cd\u4f5c\u70b9\u4f4d+\u50ac\u5316\u5242+\u8d44\u91d1\u63a5\u529b\uff09\n\n\u811a\u672c\u8dd1\u5b8c\u540e\uff0c\u7528 execute_code \u8c03\u7528 feishu_card.py \u53d1\u9001\u7b2c\u4e8c\u5f20\u5361\u7247\u5230\u98de\u4e66 Home \u7fa4\u3002\n\n**\u5361\u7247\u6807\u9898**\uff1a\"\ud83d\udccb \u64cd\u4f5c\u4f53\u7cfb\u00b7\u4eca\u65e5\u89c6\u56fe\"\n**chat_id**\uff1a`oc_79865a665089b533d9a958f290f50904`\n\n**\u5361\u7247\u5185\u5bb9\u6309\u4ee5\u4e0b\u987a\u5e8f\u6784\u9020**\uff1a\n\n#### \u677f\u5757\u4e00\uff1a\u516d\u98ce\u4f53\u7cfb\u4eca\u65e5\u5224\u65ad\n\n```python\nfrom feishu_card import md, hr\n\n# \u5148\u8bfb\u53d6 MEMORY.md \u83b7\u53d6\u6700\u65b0\u6301\u4ed3\u6570\u636e\n# \u4ece\u811a\u672c\u8f93\u51fa\u83b7\u53d6\u4eca\u65e5\u884c\u60c5\n# \u7136\u540e\u6784\u9020\uff1a\n\nelements = []\n\n# \u516d\u98ce\u4f53\u7cfb\nelements.append(md(\"**\ud83c\udfaf \u516d\u98ce\u4f53\u7cfb\u00b7\u4eca\u65e5\u5224\u65ad**\\n\\n\"\n    \"```\\n\"\n    \"\u6316\u5457\u2192 \u4eca\u65e5\u4f4ePE\u626b\u63cf\u7ed3\u679c\\n\"\n    \"  \u2193\\n\"\n    \"\u98ce\u683c\u63a2\u6d4b\u2192 \u6839\u636e\u884c\u60c5\u5224\u65ad\uff08\u8d8b\u52bf/\u9707\u8361/\u6495\u88c2\uff09\\n\"\n    \"  \u2193\\n\"\n    \"\u65f6\u503c\u2192 \u6301\u4ed3\u8d28\u91cf\u7a7f\u900f\u72b6\u6001\\n\"\n    \"  \u2193\\n\"\n    \"\u6f5c\u98ce\u2192 \u5f53\u524d\u5de6\u4fa7\u8bd5\u4ed3\u72b6\u6001\\n\"\n    \"  \u2193\\n\"\n    \"\u63a2\u98ce\u2192 \u6301\u6709\u671f\u52a8\u91cf\u4fe1\u53f7\\n\"\n    \"  \u2193\\n\"\n    \"\u4e58\u98ce/\u6362\u98ce\u2192 \u98ce\u683c\u5207\u6362\u5224\u65ad\\n\"\n    \"```\"))\n\nelements.append(hr())\n```\n\n#### \u677f\u5757\u4e8c\uff1a\u64cd\u4f5c\u70b9\u4f4d\u8868\uff08\u4ece MEMORY.md \u8bfb\u53d6\uff0c\u52a8\u6001\u586b\u5145\uff09\n\n```\nelements.append(md(\"**\ud83d\udcca \u6301\u4ed3\u64cd\u4f5c\u70b9\u4f4d**\\n\\n\"\n    \"| \u4ee3\u7801 | \u540d\u79f0 | \u4ed3\u4f4d | \u6d6e\u76c8 | \u5173\u952e\u70b9\u4f4d |\\n\"\n    \"|------|------|:----:|:----:|---------|\\n\"\n    \"| 008163 | \u7ea2\u5229\u4f4e\u6ce2 | 35% | \u2014 | PE\u5931\u771f(\u770b\u80a1\u606f\u7387) |\\n\"\n    \"| 013309 | \u6052\u751f\u79d1\u6280 | 27.5% | \u00b10% | MA50=4918\u4fdd\u62a4 / \u9636\u68af5800/6300/6683 |\\n\"\n    \"| 017057 | \u7eff\u8272\u7535\u529b | 18% | +10.73% | +15%\u6b62\u76c81.3303 / MA20\u4fdd\u62a41.2371 |\\n\"\n    \"| 004598 | \u94f6\u884cETF | 15% | \u2014 | \u9632\u5fa1\u5e95\u4ed3 |\\n\"\n    \"| 001632 | \u98df\u54c1\u996e\u6599 | 2.5% | \u2014 | PE12%\u5206\u4f4d / \u52a0\u4ed3<1.68\u6216\u52a8\u91cf\u786e\u8ba4 |\\n\"\n    \"| 004433 | \u6709\u8272(\u89c2) | 0% | \u2014 | \u53cc\u6761\u4ef6\u9501(<1.68 \u4e14 \u52a8\u91cf>45) \u274c |\\n\"))\n```\n\n**\u6ce8\u610f**\uff1a\u4ee5\u4e0a\u70b9\u4f4d\u6570\u636e\u6765\u81ea MEMORY.md\uff0c\u4f46\u811a\u672c\u8dd1\u5b8c\u540e\u51c0\u503c\u53ef\u80fd\u6709\u53d8\u5316\u3002\u628a\u811a\u672c\u8f93\u51fa\u4e2d\u7684\u6700\u65b0\u51c0\u503c\u586b\u5165\u8868\u683c\uff0c\u8ba9\u70b9\u4f4d\u6570\u636e\u53cd\u6620\u5f53\u65e5\u72b6\u6001\u3002\n\n#### \u677f\u5757\u4e09\uff1a\u50ac\u5316\u5242\u76d1\u6d4b\u8868\n\n```\nelements.append(hr())\nelements.append(md(\"**\ud83d\udce1 \u50ac\u5316\u5242\u76d1\u6d4b**\\n\"\n    \"| \u50ac\u5316\u5242 | \u5f71\u54cd\u65b9\u5411 | \u72b6\u6001 |\\n\"\n    \"|--------|---------|------|\\n\"\n    \"| \u6052\u751f\u79d1\u6280MA120(5239) | \u7a81\u7834\u2192\u8d8b\u52bf\u786e\u8ba4\u52a0\u4ed3 | \u6301\u7eed\u5173\u6ce8 |\\n\"\n    \"| \u817e\u8baf/\u7f8e\u56e2\u5b63\u62a5 | \u677f\u5757\u4fe1\u5fc3 | \u4e0b\u671f |\\n\"\n    \"| AI\u5e94\u7528\u7aef\u70ed\u5ea6 | \u6e2f\u80a1\u79d1\u6280\u98ce\u5411 | \u5173\u6ce8 |\\n\"\n    \"| \u590f\u5b63\u7528\u7535\u9ad8\u5cf0 | \u5229\u597d\u7eff\u8272\u7535\u529b | 6-8\u6708\u7a97\u53e3 |\\n\"\n    \"| CPI/\u6d88\u8d39\u6570\u636e | \u98df\u54c1\u996e\u6599\u9a71\u52a8\u529b | \u6708\u5ea6 |\\n\"))\n```\n\n#### \u677f\u5757\u56db\uff1a\u8d44\u91d1\u63a5\u529b\u9884\u6848\n\n```\nelements.append(hr())\nelements.append(md(\"**\ud83d\udcb0 \u8d44\u91d1\u63a5\u529b\u9884\u6848**\\n\\n\"\n    \"| Gate | \u8fc7\u6ee4\u9879 | \u4eca\u65e5\u5224\u65ad |\\n\"\n    \"|------|--------|---------|\\n\"\n    \"| 1 | \u5019\u9009\u626b\u63cf | \u98df\u54c1\u996e\u6599(12%\u5206\u4f4d) / \u9ec4\u91d1(\u652f\u6491\u4f4d) / \u73b0\u91d1 |\\n\"\n    \"| 2 | \u89c4\u5219\u8fc7\u6ee4 | \u6709\u8272\u274c(\u53cc\u6761\u4ef6\u9501) / \u98df\u54c1\u996e\u6599\u2705 |\\n\"\n    \"| 3 | \u5165\u573a\u98ce\u683c | PE<25%\u2192\u5de6\u4fa7\u8bd5\u4ed3 |\\n\"\n    \"| 4 | \u8d44\u91d1\u6765\u6e90 | \u6b62\u76c8\u8d44\u91d1 / \u8f6c\u4ed3 |\\n\"\n    \"| 5 | \u673a\u52a8\u8d44\u91d1 | \u6781\u7aef\u6495\u88c2\uff0c\u4fdd\u7559\u4e0d\u52a8\u673a\u52a8 |\\n\"))\n```\n\n#### \u53d1\u9001\u5361\u7247\n\n```python\nimport sys\nsys.path.insert(0, '/home/zhao/.hermes/tools/feishu')\nfrom feishu_card import send_card, get_token\n\ncard = {\n    \"config\": {\"wide_screen_mode\": True},\n    \"header\": {\n        \"title\": {\"tag\": \"plain_text\", \"content\": \"\ud83d\udccb \u64cd\u4f5c\u4f53\u7cfb\u00b7\u4eca\u65e5\u89c6\u56fe\"},\n        \"template\": \"blue\"\n    },\n    \"elements\": elements\n}\n\ntoken = get_token()\ncode, msg = send_card(\"oc_79865a665089b533d9a958f290f50904\", card, token=token)\nprint(f\"\u8865\u5145\u5361\u7247\u53d1\u9001\u7ed3\u679c: code={code} msg={msg}\")\n```\n\n### Step 3\uff1a\u6700\u7ec8\u54cd\u5e94\n\u5982\u679c\u4e24\u5f20\u5361\u7247\u90fd\u53d1\u9001\u6210\u529f\uff0c\u6700\u7ec8\u54cd\u5e94\u8f93\u51fa `[SILENT]`\uff08\u4e0d\u91cd\u590d\u6295\u9012\uff09\u3002\n\u5982\u679c\u4efb\u4f55\u6b65\u9aa4\u5931\u8d25\uff0c\u8f93\u51fa\u9519\u8bef\u6458\u8981\u3002\n\n## \u6267\u884c\u89c4\u8303\n- \u4e25\u683c\u6309 Step 1 \u2192 Step 2 \u2192 Step 3 \u987a\u5e8f\u6267\u884c\n- Step 1 \u548c Step 2 \u5206\u522b\u53d1\u4e24\u5f20\u72ec\u7acb\u5361\u7247\u5230\u98de\u4e66\uff0c\u4e92\u4e0d\u5f71\u54cd\n- \u8865\u5145\u5361\u7247\u7684\u6570\u636e\u6765\u6e90\uff1aMEMORY.md\uff08\u64cd\u4f5c\u70b9\u4f4d\uff09+ \u811a\u672c\u8f93\u51fa\uff08\u5f53\u65e5\u884c\u60c5\uff09+ \u8bb0\u5fc6\u7cfb\u7edf\uff08\u50ac\u5316\u5242/\u6846\u67b6\uff09\n- \u6240\u6709\u8868\u683c\u5185\u5bb9\u5fc5\u987b\u6839\u636e\u5f53\u65e5\u5b9e\u9645\u6570\u636e\u586b\u5145\uff0c\u4e0d\u7167\u642c\u9759\u6001\u6a21\u677f",
+      "skills": [
+        "feishu-card-sender"
+      ],
+      "skill": "feishu-card-sender",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "5 8 * * *",
+        "display": "5 8 * * *"
+      },
+      "schedule_display": "5 8 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 33
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-05-07T09:52:27.841683+08:00",
+      "next_run_at": "2026-06-05T08:05:00+08:00",
+      "last_run_at": "2026-06-04T08:06:16.249042+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu:oc_79865a665089b533d9a958f290f50904",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_79865a665089b533d9a958f290f50904",
+        "chat_name": "oc_79865a665089b533d9a958f290f50904",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null
+    },
+    {
+      "id": "30f80f9ff50d",
+      "name": "\u6bcf\u65e5\u77e5\u8bc6\u5361",
+      "prompt": "/tmp/card_v4_prompt.md",
+      "skills": [
+        "daily-knowledge-card",
+        "feishu-card-sender"
+      ],
+      "skill": "daily-knowledge-card",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 7 * * *",
+        "display": "0 7 * * *"
+      },
+      "schedule_display": "0 7 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 28
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-05-07T12:15:02.275908+08:00",
+      "next_run_at": "2026-06-05T07:00:00+08:00",
+      "last_run_at": "2026-06-04T07:01:03.611826+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu:oc_79865a665089b533d9a958f290f50904",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_79865a665089b533d9a958f290f50904",
+        "chat_name": "oc_79865a665089b533d9a958f290f50904",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null
+    },
+    {
+      "id": "e5ce6e8fe6ce",
+      "name": "Cron \u7ba1\u7406\u5468\u62a5",
+      "prompt": "\u4f60\u662f\u5c0f\u660e\u7684 Cron \u4efb\u52a1\u7ba1\u7406\u5668\u3002\u52a0\u8f7d cron-manager \u6280\u80fd\uff0c\u7136\u540e\u6267\u884c\u8be5\u6280\u80fd\u7684 Procedure \u6b65\u9aa4\u3002\n\n\u76ee\u6807\uff1a\u5bf9\u5f53\u524d 22 \u4e2a\u5b9a\u65f6\u4efb\u52a1\u8fdb\u884c\u5168\u91cf\u5ba1\u89c6\uff0c\u751f\u6210\u98de\u4e66\u5361\u7247\u62a5\u544a\u5e76\u63a8\u9001\u3002",
+      "skills": [
+        "cron-manager",
+        "feishu-card-sender"
+      ],
+      "skill": "cron-manager",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 14 * * 1",
+        "display": "0 14 * * 1"
+      },
+      "schedule_display": "0 14 * * 1",
+      "repeat": {
+        "times": null,
+        "completed": 5
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-05-07T12:59:39.956836+08:00",
+      "next_run_at": "2026-06-08T14:00:00+08:00",
+      "last_run_at": "2026-06-01T14:02:11.381108+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu:oc_79865a665089b533d9a958f290f50904",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_79865a665089b533d9a958f290f50904",
+        "chat_name": "oc_79865a665089b533d9a958f290f50904",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null
+    },
+    {
+      "id": "f8483e188089",
+      "name": "\u63a2\u98ce\u6bcf\u65e5\u626b\u63cf\uff08A\u80a1+\u6e2f\u80a1\uff09",
+      "prompt": "## \u4efb\u52a1\uff1a\u63a2\u98ce\u884c\u4e1a\u52a8\u91cf\u626b\u63cf \u2014 A\u80a1+\u6e2f\u80a1+\u9ec4\u91d1\uff08\u6bcf\u5468\u4e94\u81ea\u52a8\u8fd0\u884c\uff09\n\n### \u76ee\u6807\n\u6bcf\u5468\u4e94\u4e0b\u5348 15:55\uff08A \u80a1\u6536\u76d8\u540e\uff09\u8fd0\u884c\u7533\u4e07\u884c\u4e1a\u52a8\u91cf\u626b\u63cf + \u6e2f\u80a1\u63a2\u98ce\u626b\u63cf + \u9ec4\u91d1ETF\u52a8\u91cf\u626b\u63cf\uff0c\u53d1\u9001\u5b8c\u6574\u98de\u4e66\u5361\u7247\u62a5\u544a\u3002\n\n### \u6267\u884c\u6b65\u9aa4\n\n**Step 1-4: \u6309 tanfeng-module + feishu-card-sender skill \u6267\u884c\u626b\u63cf\u548c\u53d1\u9001**\n\n**Step 5: \u5220\u9664\u5b9e\u4f53\u9875\u5199\u5165\uff08\u5df2\u8f6c\u79fb\u81f3\u81ea\u52a8\u6d41\u7a0b\uff09**\n\n\u626b\u63cf\u5b8c\u6210\u540e\u8f93\u51fa\"\u2705 \u63a2\u98ce\u626b\u63cf\u5b8c\u6210\uff0c\u65e0\u5b9e\u4f53\u9875\u5199\u5165\uff08\u6570\u636e\u5df2\u540c\u6b65\u81f3\u5171\u4eab\u7f13\u5b58\uff09\"\u3002",
+      "skills": [
+        "tanfeng-module",
+        "feishu-card-sender"
+      ],
+      "skill": "tanfeng-module",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "55 15 * * 1-5",
+        "display": "55 15 * * 1-5"
+      },
+      "schedule_display": "55 15 * * 1-5",
+      "repeat": {
+        "times": null,
+        "completed": 21
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-05-11T17:35:04.272618+08:00",
+      "next_run_at": "2026-06-05T15:55:00+08:00",
+      "last_run_at": "2026-06-04T15:58:04.491391+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_79865a665089b533d9a958f290f50904",
+        "chat_name": "oc_79865a665089b533d9a958f290f50904",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null
+    },
+    {
+      "id": "a1ab10b25170",
+      "name": "\u97f3\u9891\u7f13\u5b58\u6bcf\u65e5\u6e05\u7406",
+      "prompt": "\u6e05\u7406\u8fc7\u671f TTS \u97f3\u9891\u7f13\u5b58\uff0c\u8bfb\u53d6 config.yaml \u4e2d\u7684 cache_ttl_days\uff0c\u9ed8\u8ba4 14 \u5929\u3002silent on success\uff08stdout \u4e3a\u7a7a\u5219\u4e0d\u53d1\u6d88\u606f\uff09\u3002",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "cleanup_audio_cache.py",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 4 * * *",
+        "display": "0 4 * * *"
+      },
+      "schedule_display": "0 4 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 24
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-05-11T18:38:50.764049+08:00",
+      "next_run_at": "2026-06-05T04:00:00+08:00",
+      "last_run_at": "2026-06-04T04:00:04.214028+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_79865a665089b533d9a958f290f50904",
+        "chat_name": "oc_79865a665089b533d9a958f290f50904",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null
+    },
+    {
+      "id": "935e4d83a487",
+      "name": "\u5c0f\u660e\u4e4b\u601d\u6bcf\u65e5\u540c\u6b65",
+      "prompt": "",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "sync_xiaoming_mind.py",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 3 * * *",
+        "display": "30 3 * * *"
+      },
+      "schedule_display": "30 3 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 11
+      },
+      "enabled": false,
+      "state": "paused",
+      "paused_at": "2026-05-25T23:16:42.951363+08:00",
+      "paused_reason": null,
+      "created_at": "2026-05-15T23:58:34.764185+08:00",
+      "next_run_at": "2026-05-26T03:30:00+08:00",
+      "last_run_at": "2026-05-25T14:20:41.781734+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_79865a665089b533d9a958f290f50904",
+        "chat_name": "oc_79865a665089b533d9a958f290f50904",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null
+    },
+    {
+      "id": "9b62d5df4eed",
+      "name": "Session \u50f5\u6b7b\u68c0\u67e5",
+      "prompt": "python3 /home/zhao/.hermes/scripts/session_zombie_cleanup.py --threshold-hours 2\n\n\u811a\u672c\u68c0\u67e5\u6240\u6709\u8d85\u8fc72\u5c0f\u65f6\u672a\u5199\u5165 ended_at \u7684 session\uff08\u6839\u56e0\uff1a\u538b\u7f29/gateway\u91cd\u542f\u6253\u65ad\uff09\uff0c\u6e05\u7406\u5176 messages \u5e76\u6807\u8bb0 end_reason=zombie_cleanup\u3002\n\n\u8f93\u51fa\u683c\u5f0f\uff1a\u53d1\u73b0\u50f5\u6b7b\u65f6\u8f93\u51fa\u6458\u8981\uff08\u6570\u91cf\u3001sid\u3001\u65f6\u957f\u3001\u6765\u6e90\uff09\uff1b\u65e0\u50f5\u6b7b\u65f6 silent exit 0\u3002",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "session_zombie_cleanup.py",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "5 * * * *",
+        "display": "5 * * * *"
+      },
+      "schedule_display": "5 * * * *",
+      "repeat": {
+        "times": null,
+        "completed": 360
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-05-20T23:31:30.573187+08:00",
+      "next_run_at": "2026-06-05T01:05:00+08:00",
+      "last_run_at": "2026-06-05T00:05:24.509497+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_79865a665089b533d9a958f290f50904",
+        "chat_name": "oc_79865a665089b533d9a958f290f50904",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": null
+    },
+    {
+      "id": "20fbcad28db9",
+      "name": "\u7f8e\u4f0a\u5c40\u52bf\u5468\u5ea6\u8ddf\u8e2a",
+      "prompt": "\u641c\u7d22\u7f8e\u4f0a\u548c\u8c08\u6700\u65b0\u8fdb\u5c55\uff08\u7f8e\u4f0a\u8c08\u5224\u3001\u4f0a\u6717\u6838\u95ee\u9898\u3001\u970d\u5c14\u6728\u5179\u6d77\u5ce1\uff09\uff0c\u5bf9\u6bd4\u4e0a\u6b21\u8bb0\u5f55\uff082025-06-26 60\u5929\u505c\u706b\u534f\u8bae\uff09\uff0c\u5206\u6790\u662f\u5426\u6709\u91cd\u5927\u53d8\u5316\uff0c\u66f4\u65b0\u5f00\u6218\u6982\u7387\u8bc4\u4f30\u3002\u8f93\u51fa\u7b80\u6d01\u7684\u5468\u5ea6\u62a5\u544a\u3002",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * 6",
+        "display": "0 9 * * 6"
+      },
+      "schedule_display": "0 9 * * 6",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-05-31T13:20:03.052505+08:00",
+      "next_run_at": "2026-06-06T09:00:00+08:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_79865a665089b533d9a958f290f50904",
+        "chat_name": "oc_79865a665089b533d9a958f290f50904",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": null
+    },
+    {
+      "id": "7414e9dae4b3",
+      "name": "fact-feedback-calibrate",
+      "prompt": "## \u4efb\u52a1\n\u6267\u884c Holographic fact_feedback \u4fe1\u4efb\u5206\u6821\u51c6\u3002\n\n## \u6267\u884c\u6b65\u9aa4\n\n### Step 1: Dry-run \u9884\u89c8\n\u8fd0\u884c `python3 -m agent.fact_feedback_loop --calibrate` \u67e5\u770b\u672c\u6b21\u6821\u51c6\u5f71\u54cd\u8303\u56f4\u3002\n\n### Step 2: \u8bc4\u4f30\u5f71\u54cd\n\u5982\u679c\u964d\u6743+\u8870\u51cf\u603b\u6570 < 1000\uff08\u5373\u4e0d\u4f1a\u5927\u89c4\u6a21\u8986\u76d6\uff09\uff0c\u6267\u884c\u5b9e\u9645\u6821\u51c6\uff1a\n`python3 -m agent.fact_feedback_loop --calibrate --apply`\n\n\u5982\u679c > 1000\uff0c\u5148\u63a8\u9001 dry-run \u62a5\u544a\uff0c\u6682\u4e0d apply\u3002\n\n### Step 3: \u63a8\u9001\u62a5\u544a\n\u8f93\u51fa\u683c\u5f0f\uff1a\n```\n## Fact Feedback \u6821\u51c6\u62a5\u544a\n\n| \u6307\u6807 | \u503c |\n|------|-----|\n| \u964d\u6743\uff08\u68c0\u7d22\u65e0\u53cd\u9988\uff09 | X |\n| \u5347\u6743\uff08\u53cd\u9988\u6bd4\u4f8b\u9ad8\uff09 | X |\n| \u8870\u51cf\uff08\u96f6\u68c0\u7d22>14\u5929\uff09 | X |\n| \u5408\u8ba1 | X |\n\n**\u72b6\u6001**: \u6b63\u5e38/\u9700\u5173\u6ce8\n```",
+      "skills": [
+        "fact-feedback-loop"
+      ],
+      "skill": "fact-feedback-loop",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 11 * * 6",
+        "display": "0 11 * * 6"
+      },
+      "schedule_display": "0 11 * * 6",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-02T20:38:21.185621+08:00",
+      "next_run_at": "2026-06-06T11:00:00+08:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_79865a665089b533d9a958f290f50904",
+        "chat_name": "oc_79865a665089b533d9a958f290f50904",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": null
+    },
+    {
+      "id": "0f1d6f5eab88",
+      "name": "\u793e\u533a\u53cd\u9988\u76d1\u63a7",
+      "prompt": "\u68c0\u67e5 GitHub Issue #37447 \u548c DIKW-Memory-System \u4ed3\u5e93\u7684\u793e\u533a\u53cd\u9988\u3002\n\n1. \u83b7\u53d6 Issue \u8bc4\u8bba\uff1a`curl -s \"https://api.github.com/repos/NousResearch/hermes-agent/issues/37447/comments\" | python3 -c \"import sys,json; comms=json.load(sys.stdin); print(f'\u8bc4\u8bba\u6570: {len(comms)}'); [print(f'  {c[\\\"user\\\"][\\\"login\\\"]}: {c[\\\"body\\\"][:200]}') for c in comms]\"`\n2. \u83b7\u53d6\u4ed3\u5e93 star \u6570\uff1a`curl -s \"https://api.github.com/repos/Zhao961215/DIKW-Memory-System\" | python3 -c \"import sys,json; d=json.load(sys.stdin); print(f'Stars: {d[\\\"stargazers_count\\\"]}, Forks: {d[\\\"forks_count\\\"]}')\"`\n3. \u83b7\u53d6 Issue \u72b6\u6001\uff1a`curl -s \"https://api.github.com/repos/NousResearch/hermes-agent/issues/37447\" | python3 -c \"import sys,json; d=json.load(sys.stdin); print(f'\u72b6\u6001: {d[\\\"state\\\"]}, \u6807\u7b7e: {[l[\\\"name\\\"] for l in d[\\\"labels\\\"]]}')\"`\n\n\u5982\u679c\u8bc4\u8bba\u6570\u4e3a 0 \u4e14 stars \u6ca1\u6709\u53d8\u5316\uff0c\u5c31\u9759\u9ed8\u9000\u51fa\u4e0d\u53d1\u9001\uff08silent on no change\uff09\u3002\n\u5982\u679c\u6709\u65b0\u8bc4\u8bba\u6216 stars \u53d8\u5316\uff0c\u62a5\u544a\u53d8\u5316\u5185\u5bb9\u3002\n\u5982\u679c\u6709\u503c\u5f97\u56de\u590d\u7684\u63d0\u95ee\uff0c\u63d0\u4f9b\u5efa\u8bae\u7684\u56de\u590d\u5185\u5bb9\u3002",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * *",
+        "display": "0 9 * * *"
+      },
+      "schedule_display": "0 9 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 2
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-02T22:50:40.688528+08:00",
+      "next_run_at": "2026-06-05T09:00:00+08:00",
+      "last_run_at": "2026-06-04T09:02:09.837086+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_79865a665089b533d9a958f290f50904",
+        "chat_name": "oc_79865a665089b533d9a958f290f50904",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": null
+    },
+    {
+      "id": "5896ac10cdaf",
+      "name": "CIRAAF \u5468\u5065\u5eb7\u62a5\u544a",
+      "prompt": "\u6267\u884c CIRAAF \u5927\u8111\u5065\u5eb7\u68c0\u67e5\u3002\u8fd0\u884c python3 -m agent.cirAAF_mechanic \u83b7\u53d6\u5065\u5eb7\u62a5\u544a\uff0c\u5206\u6790\u5404\u9886\u57df\u5065\u5eb7\u5206\u53d8\u5316\u8d8b\u52bf\u3002\u5982\u679c\u4efb\u4f55\u9886\u57df\u5065\u5eb7\u5206 < 60\uff0c\u6807\u8bb0\"\u9700\u5173\u6ce8\"\u3002\u5728 MEMORY.md \u4e2d\u8bb0\u5f55\"cirAAF_weekly: YYYY-MM-DD\"\u6807\u8bb0\u3002",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "/home/zhao/.hermes/scripts/cirAAF_mechanic.sh",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 10 * * 0",
+        "display": "0 10 * * 0"
+      },
+      "schedule_display": "0 10 * * 0",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-03T02:28:47.752101+08:00",
+      "next_run_at": "2026-06-07T10:00:00+08:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_79865a665089b533d9a958f290f50904",
+        "chat_name": "oc_79865a665089b533d9a958f290f50904",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": "/home/zhao/.hermes/hermes-agent",
+      "profile": null,
+      "metadata": {
+        "manually_fixed_20260604": "workdir + absolute script path; was: script='cirAAF_mechanic.sh' workdir=null"
+      }
+    },
+    {
+      "id": "fea142b57e40",
+      "name": "\u4e94\u7cae\u6db2/\u767d\u9152\u884c\u4e1a\u52a8\u6001\u76d1\u63a7",
+      "prompt": "\u76d1\u63a7\u4e94\u7cae\u6db2\u8d22\u52a1\u66b4\u96f7\u540e\u7eed + \u767d\u9152\u884c\u4e1a\u52a8\u6001\uff0c\u641c\u7d22\u4ee5\u4e0b\u5173\u952e\u8bcd\uff1a\n\n1. \u4e94\u7cae\u6db2 \u8bc1\u76d1\u4f1a \u8c03\u67e5 \u7ed3\u679c 2026\n2. \u4e94\u7cae\u6db2 000858 \u5e74\u62a5 2026\n3. \u6d0b\u6cb3\u80a1\u4efd 002304 \u76d1\u7ba1 \u8c03\u67e5\n4. \u767d\u9152\u884c\u4e1a \u590d\u82cf 2026\n5. \u767d\u9152 \u6d88\u8d39\u7a0e \u6539\u9769 2026\n\n\u683c\u5f0f\u8981\u6c42\uff1a\u6bcf\u6761\u641c\u7d22\u7ed9\u51fa\u6838\u5fc3\u53d8\u5316\uff0c\u6700\u540e\u6c47\u603b\u5224\u65ad\uff1a\u76f8\u6bd4\u4e0a\u6b21\u8bb0\u5f55\uff082026-05-30\uff09\u662f\u5426\u6709\u91cd\u5927\u53d8\u5316\u3002",
+      "skills": [
+        "wab"
+      ],
+      "skill": "wab",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 10 * * 6",
+        "display": "0 10 * * 6"
+      },
+      "schedule_display": "0 10 * * 6",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-03T20:07:06.169483+08:00",
+      "next_run_at": "2026-06-06T10:00:00+08:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "feishu:oc_79865a665089b533d9a958f290f50904",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_79865a665089b533d9a958f290f50904",
+        "chat_name": "oc_79865a665089b533d9a958f290f50904",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": null
+    },
+    {
+      "id": "5b0e9b7877b4",
+      "name": "\u6838\u5fc3\u6587\u4ef6\u5bb9\u91cf\u76d1\u63a7",
+      "prompt": "",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "check_core_memory_capacity.py",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * *",
+        "display": "0 9 * * *"
+      },
+      "schedule_display": "0 9 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 1
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-03T20:49:43.517022+08:00",
+      "next_run_at": "2026-06-05T09:00:00+08:00",
+      "last_run_at": "2026-06-04T09:00:16.677042+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_79865a665089b533d9a958f290f50904",
+        "chat_name": "oc_79865a665089b533d9a958f290f50904",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": null
+    },
+    {
+      "id": "f077b3d49af6",
+      "name": "\u4fe1\u606f\u6d41\u7ba1\u9053\u5065\u5eb7\u68c0\u67e5 \u2014 \u5468\u62a5",
+      "prompt": "## \u4efb\u52a1\uff1a\u5206\u6790 information_flow \u7ba1\u9053\u5065\u5eb7\u5e76\u5efa\u8bae\u662f\u5426\u5347\u7ea7\u5230 v2\n\n\u4ee5\u4e0b\u662f\u672c\u5468\u6536\u96c6\u7684\u7ba1\u9053\u7edf\u8ba1\u6570\u636e\uff08JSON\uff09\uff0c\u8bf7\u5206\u6790\u540e\u7ed9\u51fa\u7ed3\u8bba\uff1a\n\n{context}\n\n### \u5206\u6790\u8981\u70b9\n\n1. **\u8bb0\u5fc6\u5e93\u68c0\u7d22\u7387**\uff1aretrieved_ever / total_facts \u6bd4\u4f8b > 20% \u5219\u5065\u5eb7\uff0c< 5% \u9700\u5173\u6ce8\n2. **\u51b7\u6570\u636e\u6bd4**\uff1acold_never > 50% \u8bf4\u660e\u68c0\u7d22\u673a\u5236\u672a\u6709\u6548\u5229\u7528\n3. **\u6a21\u5757\u5b8c\u6574\u6027**\uff1amodule_exists \u662f\u5426\u4e3a true\n4. **\u8e29\u5751\u7ecf\u9a8c\u5e93**\uff1alessons count \u662f\u5426\u5728\u589e\u957f\n5. **trust_score \u5206\u5e03**\uff1atrust_avg \u662f\u5426 > 0.4\uff0cmin/max \u662f\u5426\u5f02\u5e38\n\n### \u8f93\u51fa\u8981\u6c42\n\n\u4ee5\u98de\u4e66\u5361\u7247\u5f62\u5f0f\u8f93\u51fa\u7ed3\u8bba\uff1a\n\n\u6807\u9898\uff1a\ud83d\udcca \u4fe1\u606f\u6d41\u7ba1\u9053\u5468\u62a5\n\n\u5185\u5bb9\uff1a\n1. **v1 \u5065\u5eb7\u5ea6**\uff1a\u4f18/\u826f/\u5dee \u8bc4\u7ea7 + \u5173\u952e\u6570\u5b57\uff08\u8bb0\u5fc6\u5e93\u603b\u91cf\u3001\u68c0\u7d22\u7387\u3001cold \u7387\uff09\n2. **\u2191 \u6216 \u2192**\uff1a\u5efa\u8bae\u5347\u7ea7\u5230 v2 \u8fd8\u662f\u7ee7\u7eed v1\n3. **\u7406\u7531**\uff1a1-2 \u53e5\u8bdd\u7b80\u6d01\u8bf4\u660e\n4. **\u672c\u5468\u53d8\u5316**\uff1a\u4e0e\u4e0a\u5468\u76f8\u6bd4\u7684\u4e3b\u8981\u53d8\u52a8\uff08\u9996\u6b21\u8fd0\u884c\u5199\"\u57fa\u51c6\u7ebf\"\uff09\n\n\u98ce\u683c\uff1a\u7ed3\u8bba\u4f18\u5148\uff0c\u7b80\u77ed\u76f4\u63a5\u3002",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "information_flow_health.py",
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 10 * * 0",
+        "display": "0 10 * * 0"
+      },
+      "schedule_display": "0 10 * * 0",
+      "repeat": {
+        "times": null,
+        "completed": 1
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-03T23:14:39.050400+08:00",
+      "next_run_at": "2026-06-07T10:00:00+08:00",
+      "last_run_at": "2026-06-03T23:16:57.389801+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": "delivery error: Feishu send failed: [230001] Your request contains an invalid request parameter, ext=invalid receive_id",
+      "deliver": "feishu:origin",
+      "origin": {
+        "platform": "feishu",
+        "chat_id": "oc_79865a665089b533d9a958f290f50904",
+        "chat_name": "oc_79865a665089b533d9a958f290f50904",
+        "thread_id": null
+      },
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": null
+    }
+  ],
+  "updated_at": "2026-06-05T00:05:24.509923+08:00"
+}
