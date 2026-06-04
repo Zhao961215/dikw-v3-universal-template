@@ -23,8 +23,7 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-          # v3.1 仓库无 requirements.txt/pyproject.toml，禁用 pip cache
-          cache: false
+          # v3.1 仓库无 requirements.txt/pyproject.toml，禁用 pip cache（v6 不支持 cache: false，删除字段）
 
       - name: Install dependencies
         run: |
